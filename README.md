@@ -43,7 +43,7 @@ Here's a sample for **Emerald IV, 6th Place**:
     ```
 
 3. **Set Up Config**:
-    - Add your Discord `TOKEN` `CHAT_ROOM_ID` and `RIOT_IDS` to `.env` file.
+    - Add your Discord `TOKEN` , `CHAT_ROOM_ID` and `RIOT_IDS` to `.env` file.
     - Use your own `.env` file to store your Discord API key.
 
 4. **Run the Bot**:

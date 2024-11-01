@@ -923,8 +923,8 @@ def create_match_summary(profile_data, shcedule_run=False):
 
 if __name__ == "__main__":
     # Place any testing or standalone code here
-    riot_id = "1010"
-    tag = "ten10"
+    riot_id = ""
+    tag = ""
     profile_data = get_tft_profile(riot_id, tag)
 
     create_match_summary(profile_data)
