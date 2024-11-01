@@ -219,7 +219,6 @@ def create_match_summary(profile_data, shcedule_run=False):
     
     latest_augments = latest_match.get("summary", {}).get("augments", [])
     augment_urls = [augment_data(i) for i in latest_augments]
-    print("Augment URLs:", augment_urls)
 
     player_rating_text = latest_match.get("summary", {}).get("player_rating_numeric", "")
     ranked_rating_text = ranked.get("rating_numeric", "")
