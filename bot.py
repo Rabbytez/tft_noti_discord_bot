@@ -78,7 +78,8 @@ async def latest_match(ctx, riot_id: str, tag: str):
 async def chech_lasted_match():
 
     riot_ids=RIOT_IDS
-
+    if riot_ids == None:
+        return False
     for i in riot_ids:
         riot_id, tag = i.split('#')
 
