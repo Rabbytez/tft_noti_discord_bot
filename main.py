@@ -157,24 +157,17 @@ def create_match_summary(profile_data, shcedule_run=False):
     )
 
     # Extract LP from player_rating and ranking text
-    player_rating_text = latest_match.get("summary", {}).get("player_rating", "")
-    ranked_rating_text = ranked.get("rating_text", "")
+    # player_rating_text = latest_match.get("summary", {}).get("player_rating", "")
+    # ranked_rating_text = ranked.get("rating_text", "")
 
-    # Extract LP numbers using regex
-    match_lp = (
-        int(re.search(r"(\d+) LP", player_rating_text).group(1))
-        if player_rating_text
-        else 0
-    )
-    current_lp = (
-        int(re.search(r"(\d+) LP", ranked_rating_text).group(1))
-        if ranked_rating_text
-        else 0
-    )
+    player_rating_text = latest_match.get("summary", {}).get("player_rating_numeric", "")
+    ranked_rating_text = ranked.get("rating_numeric", "")
 
-    # Calculate LP difference
-    lp_difference = current_lp - match_lp
 
+    try:
+        lp_difference = int(ranked_rating_text) - int(player_rating_text)
+    except:
+        lp_difference = 0
     # Get the meme URL based on placement
     meme_image = get_meme_url_by_placement(latest_match.get("placement", 9))
 
@@ -716,10 +709,10 @@ def create_match_summary(profile_data, shcedule_run=False):
 
 if __name__ == "__main__":
     # Place any testing or standalone code here
-    riot_id = "beggy"
-    tag = "3105"
+    riot_id = "Mawinner"
+    tag = "1402"
     profile_data = get_tft_profile(riot_id, tag)
 
-    create_match_summary(profile_data)
+    create_match_summary(profile_data,True)
 
     # create_match_summary(profile_data, True)
