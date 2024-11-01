@@ -12,6 +12,7 @@ import time
 import re
 from augments import augment_data
 
+folder_path="outputs/"
 
 def get_tft_profile(riot_id, tag, tft_set="TFTSet12", include_revival_matches=True):
     base_url = "https://api.metatft.com/public/profile/lookup_by_riotid"
