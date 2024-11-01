@@ -30,6 +30,9 @@ def get_tft_profile(riot_id, tag, tft_set="TFTSet12", include_revival_matches=Tr
         "Referer": "https://www.metatft.com/",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
     }
+    refresh_url=f'https://api.metatft.com/public/profile/refresh_by_riotid/TH2/{riot_id}/{tag}?tier=1'
+    response = requests.post(f"{refresh_url}", headers=headers)
+
 
     response = requests.get(f"{base_url}{path}", headers=headers, params=params)
 
@@ -218,11 +221,14 @@ def create_match_summary(profile_data, shcedule_run=False):
     augment_urls = [augment_data(i) for i in latest_augments]
     print("Augment URLs:", augment_urls)
 
-    latest_lp = profile_data.get("ranked_rating_changes", [{}])[-1].get("rating_numeric", 0)
-    past_lp = profile_data.get("ranked_rating_changes", [{}])[-2].get("rating_numeric", 0)
+    player_rating_text = latest_match.get("summary", {}).get("player_rating_numeric", "")
+    ranked_rating_text = ranked.get("rating_numeric", "")
+
 
     try:
-        lp_difference = latest_lp - past_lp
+        print(player_rating_text)
+        print(ranked_rating_text)
+        lp_difference = int(ranked_rating_text) - int(player_rating_text)
     except:
         lp_difference = 0
         
@@ -464,7 +470,7 @@ def create_match_summary(profile_data, shcedule_run=False):
             "price": 5,
         },
         "Norra": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Norra.png",
+            "url": "https://cdn.metatft.com/cdn-cgi/image/width=48,height=48,format=auto/https://cdn.metatft.com/file/metatft/champions/tft12_norra.png",
             "price": 5,
         },
         "Smolder": {
