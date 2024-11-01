@@ -2,7 +2,7 @@ import discord
 import logging
 import time
 from discord.ext import commands, tasks
-from config import TOKEN, CHAT_ROOM_ID
+from config import TOKEN, CHAT_ROOM_ID,RIOT_IDS
 from main import get_tft_profile, create_match_summary
 
 # Set up logging
@@ -77,7 +77,7 @@ async def latest_match(ctx, riot_id: str, tag: str):
 @tasks.loop(minutes=1)
 async def chech_lasted_match():
 
-    riot_ids=['1010#ten10','beggy#3105','Mawinner#1402']
+    riot_ids=RIOT_IDS
 
     for i in riot_ids:
         riot_id, tag = i.split('#')
