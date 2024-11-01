@@ -1,3 +1,4 @@
+
 # 🌟 TFT Match Summary Bot 🌟
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -42,9 +43,13 @@ Here's a sample for **Emerald IV, 6th Place**:
     pip install -r requirements.txt
     ```
 
-3. **Set Up Config**:
-    - Add your Discord `TOKEN` , `CHAT_ROOM_ID` and `RIOT_IDS` to `.env` file.
-    - Use your own `.env` file to store your Discord API key.
+3. **Configuration**:
+    - Create a `.env` file in the project root with the following variables:
+      ```plaintext
+      DISCORD_BOT_TOKEN=your_discord_bot_token
+      CHAT_ROOM_ID=your_discord_chat_room_id
+      RIOT_IDS={riot_id1}#{tag1},{riot_id2}#{tag2},...  # Example Riot IDs to track
+      ```
 
 4. **Run the Bot**:
     ```bash
@@ -83,6 +88,13 @@ Here's a sample for **Emerald IV, 6th Place**:
 | **Rank & LP Change**  | Displays current rank, LP change in green/red based on gain/loss. |
 | **Champion List**     | Shows champions used with icons, stars, and price indicators. |
 | **Augment Icons**     | Includes augments selected with unique icons for flair.      |
+
+---
+
+## 🔧 Troubleshooting
+- **Bot fails to connect**: Make sure the Discord `DISCORD_BOT_TOKEN` is set correctly in the `.env` file.
+- **Image rendering issues**: Ensure ChromeDriver is installed and compatible with your system.
+- **Missing Environment Variables**: Ensure the `.env` file includes `DISCORD_BOT_TOKEN`, `CHAT_ROOM_ID`, and `RIOT_IDS` variables.
 
 ---
 
