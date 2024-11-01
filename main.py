@@ -87,13 +87,46 @@ def format_time_elapsed(seconds):
     return " ".join(time_components) + " ago"
 
 
-def create_match_summary(profile_data):
+def create_match_summary(profile_data, shcedule_run=False):
     # Extract relevant data from profile_data
     summoner = profile_data.get("summoner", {})
     ranked = profile_data.get("ranked", {})
     latest_match = profile_data.get("matches", [{}])[
         0
     ]  # Assuming latest match is the first
+    
+    latest_match_id = latest_match.get("riot_match_id", "")
+    puid= summoner.get("puuid", "")
+    # check last match id of this user(puid) on file if it is the same as the latest match id abort
+    if shcedule_run:
+        # example of json
+        # {
+        #     "puid": "latest_match_id"
+        # }
+        if not os.path.exists("last_match_id.json"):
+            with open("last_match_id.json", "w") as json_file:
+                json.dump({}, json_file)
+        
+        with open("last_match_id.json") as json_file:
+            last_match_id = json.load(json_file)
+            last_match_id_json=last_match_id
+
+        if puid not in last_match_id_json:
+            # print('puid not in last_match_id_json')
+            last_match_id_json.update({puid: latest_match_id})
+            with open("last_match_id.json", "w") as json_file:
+                json.dump(last_match_id_json, json_file)
+
+        else:
+            # print('puid in last_match_id_json')
+            if last_match_id_json[puid] == latest_match_id:
+                return False
+            else:
+                last_match_id_json[puid] = latest_match_id
+                with open("last_match_id.json", "w") as json_file:
+                    json.dump(last_match_id, json_file)
+
+    
     unit_tier = latest_match.get("summary", {}).get("units", [{}])[0].get("tier", 0)
 
     # Calculate time elapsed since the match
@@ -668,10 +701,11 @@ def create_match_summary(profile_data):
         )
 
         # Capture screenshot of the container element only
-        screenshot_path = "match_summary_banner.png"
+        image_name=f"match_summary_banner_{puid}.png"
+        screenshot_path = image_name
         container.screenshot(screenshot_path)
         print(f"Saved banner to {screenshot_path}")
-
+        return image_name
     finally:
         driver.quit()
         os.remove("match_summary.html")
@@ -682,4 +716,7 @@ if __name__ == "__main__":
     riot_id = "1010"
     tag = "ten10"
     profile_data = get_tft_profile(riot_id, tag)
-    create_match_summary(profile_data)
+
+    # create_match_summary(profile_data)
+
+    create_match_summary(profile_data, True)
