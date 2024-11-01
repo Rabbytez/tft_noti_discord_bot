@@ -1,0 +1,388 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
+    <title>Match Summary</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'League Spartan', sans-serif;
+            background-color: #242944;
+            color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            padding: 20px;
+            background-color: #2c2f33;
+            max-width: 1000px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .meme-image {
+            flex-shrink: 0;
+            margin-right: 15px;
+            width: 180px;
+            height: 180px;
+            overflow: hidden;
+            border-radius: 7px;
+            background-color: transparent;
+        }
+        .meme-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+        .stats {
+            flex: 1;
+            font-size: 18px;
+            color: #f7f7f7;
+        }
+        .ranked-info {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #f7f7f7;
+        }
+        .time-info {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #f7f7f7;
+        }
+        .lp-info {
+            font-size: 20px;
+            margin-top: 12px;
+            margin-bottom: 5px;
+            color: #f7f7f7;
+        }
+        .rank-rating-label {
+            color: #cc583f; /* Bright green color for the rank rating label */
+            font-weight: bold;
+        }
+        .time-label {
+            color: #f7f7f7; 
+            font-weight: bold;
+        }
+        .lp-label {
+            color: #f7f7f7; 
+            font-weight: bold;
+        }
+        .highlight {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff6347;
+        }
+        
+        .username-tag {
+            display: flex;
+            align-items: center;
+            text-align: left;
+            font-size: 24px;
+            color: #f7f7f7;
+        }
+        .summoner-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 10px;
+            display: inline-block;
+            background-color: #ccc;
+        }
+        .summoner-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .username-info {
+            display: flex;
+            flex-direction: column; 
+        }
+        .username {
+            font-weight: bold;
+        }
+        .placement {
+            font-size: 58px;
+            color: #ffd700;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .champion-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+            padding-top: 10px;
+        }
+        .champion-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width:45px;
+        }
+        .champion-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 7px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        .augment-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .augment-label {
+            font-size: 18px;
+            color: #f7f7f7;
+        }
+        .augment-icon {
+            border-radius: 50%;
+            width: 46px;
+            height: 46px;
+        }
+        .price-1 {
+            border: 2.5px solid #ffffff; /* White */
+        }
+
+        .price-2 {
+            border: 2.5px solid #00ff00; /* Green */
+        }
+
+        .price-3 {
+            border: 2.5px solid #0000ff; /* Blue */
+        }
+
+        .price-4 {
+            border: 2.5px solid #800080; /* Purple */
+        }
+
+        .price-5 {
+            border: 2.5px solid #ffd700; /* Gold */
+        }
+        .champion-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .champion-stars {
+            color: #ffd700; /* Gold color for stars */
+            font-size: 18px;
+        }
+        
+        /* Responsive adjustments for champion-item */
+        @media (max-width: 768px) {
+            .champion-item {
+                width: 50px;
+            }
+            .champion-icon {
+                width: 50px;
+                height: 50px;
+            }
+            .champion-stars {
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .champion-item {
+                width: 40px;
+            }
+            .champion-icon {
+                width: 40px;
+                height: 40px;
+            }
+            .champion-stars {
+                font-size: 12px;
+            }
+        }
+        strong {
+            color: #00ff00; /* Bright green color for strong elements */
+        }
+        .placement-gold-1 {
+            border: 2px solid #ffd700; /* Bright Gold */
+            
+        }
+
+        .placement-gold-2 {
+            border: 2px solid #e6c200; /* Slightly Darker Gold */
+            
+        }
+
+        .placement-gold-3 {
+            border: 2px solid #ccac00; /* Even Darker Gold */
+            
+        }
+
+        .placement-gold-4 {
+            border: 2px solid #b39700; /* Darkest Gold */
+            
+        }
+
+        .placement-gray {
+            border: 2px solid #808080; /* Gray */
+            
+        }
+        .bg-gold-1 {
+            background-color: #ffd700;
+            
+        }
+
+        .bg-gold-2 {
+            background-color: #e6c200;
+            
+        }
+
+        .bg-gold-3 {
+            background-color: #ccac00;
+            
+        }
+
+        .bg-gold-4 {
+            background-color: #b39700;
+            
+        }
+
+        .bg-gray {
+            background-color: #808080;
+            
+        }
+    </style>
+</head>
+<body class="bg-gray">
+    <div class="container placement-gray">
+        <div class="meme-image">
+            <img src="https://api.memegen.link/images/buzz/you_see_that_woody/you_are_at_the_bottom.png?height=300&width=300" alt="Meme Image">
+        </div>
+
+        <div class="content">
+            <div class="header">
+                <div class="stats">
+                    <div class="ranked-info">
+                        <span class="rank-rating-label">Rank:</span> 
+                        <img src="https://cdn.metatft.com/file/metatft/ranks/emerald.png" alt="Rank Icon" style="width: 20px; height: 20px; vertical-align: middle;">
+                        <span style="color: #2ecc71;">EMERALD</span> 
+                        <span style="color: #f7f7f7;">IV 0 LP</span>
+                    </div>
+                    <div class="time-info">
+                        <span class="time-label">Time:</span> 29m 55s ago
+                    </div>
+                    <div class="time-info">
+                        <span class="time-label">Match Duration:</span> 26m 56s
+                    </div>
+                    <div class="lp-info">
+                        <span class="lp-label">LP:</span> <span class="highlight" style="color: green;">+10 LP</span>
+                    </div>
+                </div>
+
+                <div class="username-tag">
+                    <div class="summoner-icon">
+                        <img src="https://cdn.metatft.com/file/metatft/tacticians/489abd90-0929-447d-ba51-0326e0aa5469.png" alt="Summoner Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
+                    </div>
+                    <div class="username-info">
+                        <div class="username">
+                            1010#ten10
+                        </div>
+                        <div class="placement">
+                            8th
+                        </div>
+                        <div class="augment-list">
+                            <span class="augment-label">Augments:</span>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="champion-list">
+                
+                <div class="champion-item">
+                    <div class="champion-icon price-1">
+                        <img src="https://rerollcdn.com/characters/Skin/12/Jax.png" alt="Champion Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
+                    </div>
+                    <div class="champion-stars">★★</div>
+                </div>
+                
+                <div class="champion-item">
+                    <div class="champion-icon price-2">
+                        <img src="https://rerollcdn.com/characters/Skin/12/Kassadin.png" alt="Champion Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
+                    </div>
+                    <div class="champion-stars">★★</div>
+                </div>
+                
+                <div class="champion-item">
+                    <div class="champion-icon price-2">
+                        <img src="https://rerollcdn.com/characters/Skin/12/Akali.png" alt="Champion Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
+                    </div>
+                    <div class="champion-stars">★★</div>
+                </div>
+                
+                <div class="champion-item">
+                    <div class="champion-icon price-2">
+                        <img src="https://rerollcdn.com/characters/Skin/12/Ahri.png" alt="Champion Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
+                    </div>
+                    <div class="champion-stars">★★</div>
+                </div>
+                
+                <div class="champion-item">
+                    <div class="champion-icon price-3">
+                        <img src="https://rerollcdn.com/characters/Skin/12/Hecarim.png" alt="Champion Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
+                    </div>
+                    <div class="champion-stars">★★★</div>
+                </div>
+                
+                <div class="champion-item">
+                    <div class="champion-icon price-3">
+                        <img src="https://rerollcdn.com/characters/Skin/12/Shen.png" alt="Champion Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
+                    </div>
+                    <div class="champion-stars">★★</div>
+                </div>
+                
+                <div class="champion-item">
+                    <div class="champion-icon price-4">
+                        <img src="https://rerollcdn.com/characters/Skin/12/TahmKench.png" alt="Champion Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
+                    </div>
+                    <div class="champion-stars">★</div>
+                </div>
+                
+                <div class="champion-item">
+                    <div class="champion-icon price-4">
+                        <img src="https://rerollcdn.com/characters/Skin/12/Kalista.png" alt="Champion Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
+                    </div>
+                    <div class="champion-stars">★</div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</body>
+</html>
