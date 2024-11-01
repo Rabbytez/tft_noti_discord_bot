@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
-[![Discord](https://img.shields.io/badge/discord.js-v1.0-lightgrey)](https://discordpy.readthedocs.io/)
+[![Discord](https://img.shields.io/badge/discord.py-v2.4.0-lightgrey)](https://discordpy.readthedocs.io/)
 
 ## 🚀 About the Project
 This bot tracks **Teamfight Tactics (TFT)** match summaries and creates visually engaging banners for each match. It fetches player data from Riot Games, generates HTML summaries, and captures them as stylish images to post directly on Discord! 
