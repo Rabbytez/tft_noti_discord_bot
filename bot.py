@@ -1,10 +1,9 @@
 import discord
 import logging
-import asyncio
+import time
 from discord.ext import commands
 from config import TOKEN, CHAT_ROOM_ID
-from main import get_tft_profile, format_latest_match_for_discord  # Import functions from main.py
-import time
+from main import get_tft_profile, create_match_summary
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -13,7 +12,6 @@ logger = logging.getLogger(__name__)
 # Set up intents
 intents = discord.Intents.default()
 intents.message_content = True
-intents.voice_states = True
 
 # Set up the bot
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -44,12 +42,37 @@ async def join_voice(ctx):
 @bot.command(name='tft')
 async def latest_match(ctx, riot_id: str, tag: str):
     try:
+        # Fetch profile data
         profile_data = get_tft_profile(riot_id, tag)
-        discord_message = format_latest_match_for_discord(profile_data)
-        await ctx.send(discord_message)
+
+        # Check for the presence of 'summoner' and 'matches' keys
+        if 'summoner' not in profile_data:
+            await ctx.send("No summoner data found for this player. Please check the Riot ID and tag.")
+            logger.error("Missing 'summoner' key in profile data.")
+            return
+        
+        if 'matches' not in profile_data or not profile_data['matches']:
+            await ctx.send("No match data available for this player.")
+            logger.error("Missing 'matches' key or no matches in profile data.")
+            return
+        
+        # Get the latest match by timestamp
+        latest_match = max(profile_data["matches"], key=lambda x: x.get("match_timestamp", 0))
+
+        # Generate the match summary banner using HTML and capture it as an image
+        create_match_summary(profile_data)
+        
+        # Send the banner image file to Discord
+        with open('match_summary_banner.png', 'rb') as file:
+            await ctx.send(file=discord.File(file, 'match_summary_banner.png'))
+            
+    except KeyError as e:
+        logger.error(f"Missing key in match data: {e}")
+        await ctx.send("Failed to retrieve match data. Some information is missing.")
     except Exception as e:
         logger.error(f"Error fetching match data: {e}")
         await ctx.send("Failed to retrieve match data. Please try again later.")
+
 
 def run_bot():
     reconnect_attempts = 0
