@@ -99,7 +99,7 @@ async def chech_lasted_match():
             channel = bot.get_channel(CHAT_ROOM_ID)  # Replace with your channel ID
             
             # send message with image
-            msg=f'{i}'+'\'s latest match'
+            msg=f'Detect {i}'+'\'s latest match'
             with open(image_name, 'rb') as file:
                 await channel.send(file=discord.File(file, image_name),content=msg)
 
