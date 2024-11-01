@@ -49,15 +49,15 @@ def save_json_to_file(data, folder_path, file_name):
 def get_meme_url_by_placement(placement):
     # Define the meme URLs based on placement
     meme_urls = {
-        1: "https://api.memegen.link/images/rollsafe.png",
-        2: "https://api.memegen.link/images/cheems/it's_gooood.jpg",
-        3: "https://api.memegen.link/images/fine/this_is_fine.jpg",
-        4: "https://api.memegen.link/images/grave/_/5th_place/4th_place.jpg",
-        5: "https://api.memegen.link/images/ugandanknuck/5th_place/it's_okay_just_10_lp.png?height=100&width=180",
-        6: "https://api.memegen.link/images/disastergirl/7_8th_place/me.jpg",
-        7: "https://api.memegen.link/images/ds/7th_place/8th_place.png?height=380&width=250",
-        8: "https://api.memegen.link/images/buzz/you_see_that_woody/you_are_at_the_bottom.png",
-        9: "https://api.memegen.link/images/woman-cat/why_is_it_not_working/error.jpg",
+        1: "https://api.memegen.link/images/stonks.png?height=300&width=300",
+        2: "https://api.memegen.link/images/cheems/it's_gooood.jpg?height=300&width=300",
+        3: "https://api.memegen.link/images/fine/this_is_fine.jpg?height=300&width=300",
+        4: "https://api.memegen.link/images/grave/_/5th_place/4th_place.jpg?height=300&width=300",
+        5: "https://api.memegen.link/images/ugandanknuck/5th_place/it's_okay_just_10_lp.png?height=300&width=300",
+        6: "https://api.memegen.link/images/disastergirl/7th_place/me.jpg?height=300&width=300",
+        7: "https://api.memegen.link/images/ds/7th_place/8th_place.png?height=300&width=300",
+        8: "https://api.memegen.link/images/buzz/you_see_that_woody/you_are_at_the_bottom.png?height=300&width=300",
+        9: "https://api.memegen.link/images/woman-cat/why_is_it_not_working/error.jpg?height=300&width=300",
     }
     # Return the meme URL based on placement, default to the last meme if not found
     return meme_urls.get(placement, meme_urls[9])
@@ -481,11 +481,14 @@ def create_match_summary(profile_data, shcedule_run=False):
             height: 200px;
             overflow: hidden;
             border-radius: 8px;
+            background-color: transparent;
         }
         .meme-image img {
-            width: 100%;
+            width: 115%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
+            display: block;
         }
         .content {
             display: flex;
@@ -713,10 +716,10 @@ def create_match_summary(profile_data, shcedule_run=False):
 
 if __name__ == "__main__":
     # Place any testing or standalone code here
-    riot_id = "1010"
-    tag = "ten10"
+    riot_id = "beggy"
+    tag = "3105"
     profile_data = get_tft_profile(riot_id, tag)
 
-    # create_match_summary(profile_data)
+    create_match_summary(profile_data)
 
-    create_match_summary(profile_data, True)
+    # create_match_summary(profile_data, True)
