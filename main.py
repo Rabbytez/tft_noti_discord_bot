@@ -38,7 +38,10 @@ def get_tft_profile(riot_id, tag, tft_set="TFTSet12", include_revival_matches=Tr
     response = requests.get(f"{base_url}{path}", headers=headers, params=params)
 
     if response.status_code == 200:
-        return response.json()
+        data = response.json()
+        # Save the data to a JSON file
+        save_json_to_file(data, folder_path, f"{riot_id}_{tag}_profile.json")
+        return data
     else:
         response.raise_for_status()
 
@@ -923,8 +926,8 @@ def create_match_summary(profile_data, shcedule_run=False):
 
 if __name__ == "__main__":
     # Place any testing or standalone code here
-    riot_id = ""
-    tag = ""
+    riot_id = "beggy"
+    tag = "3105"
     profile_data = get_tft_profile(riot_id, tag)
 
     create_match_summary(profile_data)
