@@ -7,12 +7,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
-from jinja2 import Template
+from jinja2 import Template , Environment, FileSystemLoader
 import time
 import re
 from augments import augment_data
+import matplotlib.pyplot as plt
+import io
+import glob
+
 
 folder_path="outputs/"
+
 
 def get_tft_profile(riot_id, tag, tft_set="TFTSet12", include_revival_matches=True):
     base_url = "https://api.metatft.com/public/profile/lookup_by_riotid"
@@ -44,7 +49,44 @@ def get_tft_profile(riot_id, tag, tft_set="TFTSet12", include_revival_matches=Tr
         return data
     else:
         response.raise_for_status()
+        
+def get_tft_unit_items_processed():
+    base_url = "https://api2.metatft.com/tft-comps-api/unit_items_processed"
 
+    response = requests.get(base_url)
+
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            # Save the data to a JSON file
+            folder_path = "outputs"  # Ensure this path exists
+            save_json_to_file(data, folder_path, f"unit_items_processed.json")
+            return data
+        except json.JSONDecodeError:
+            print("Error: Response is not valid JSON.")
+            print("Response content:", response.content)  # Print raw content for debugging
+    else:
+        print(f"Error: Received status code {response.status_code}")
+        print("Response content:", response.content)  # Print raw content for debugging
+
+def get_tft_percentiles():
+    base_url = "https://api2.metatft.com/tft-stat-api/percentiles"
+
+    response = requests.get(base_url)
+
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            # Save the data to a JSON file
+            folder_path = "outputs"  # Ensure this path exists
+            save_json_to_file(data, folder_path, f"tft_percentiles.json")
+            return data
+        except json.JSONDecodeError:
+            print("Error: Response is not valid JSON.")
+            print("Response content:", response.content)  # Print raw content for debugging
+    else:
+        print(f"Error: Received status code {response.status_code}")
+        print("Response content:", response.content)  # Print raw content for debugging
 
 def save_json_to_file(data, folder_path, file_name):
     os.makedirs(folder_path, exist_ok=True)
@@ -52,7 +94,6 @@ def save_json_to_file(data, folder_path, file_name):
     with open(file_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
     print(f"Data saved to {file_path}")
-
 
 def get_meme_url_by_placement(placement):
     # Define the meme URLs based on placement
@@ -923,13 +964,153 @@ def create_match_summary(profile_data, shcedule_run=False):
         driver.quit()
         os.remove("match_summary.html")
 
+def show_player_stats(profile_data):
+    # Extract player stats and traits from `profile_data`
+    summary = profile_data['matches'][0]['summary']
+    player_data = {
+        "level": summary['level'],
+        "time_eliminated": summary['time_eliminated'],
+        "last_round": summary['last_round'],
+        "total_damage_to_players": summary['total_damage_to_players'],
+        "players_eliminated": summary['players_eliminated'],
+        "player_rating": summary['player_rating'],
+        "player_rating_numeric": summary['player_rating_numeric'],
+        "traits": ", ".join(summary['traits'])
+    }
+
+    # HTML template as a string
+    html_template = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Player Stats</title>
+        <style>
+            body { font-family: Arial, sans-serif; background-color: #2c2f33; color: #f7f7f7; }
+            .container { width: 400px; padding: 20px; background-color: #23272a; border-radius: 8px; margin: auto; }
+            .header { font-size: 24px; font-weight: bold; margin-bottom: 15px; text-align: center; }
+            .stats { font-size: 16px; line-height: 1.6; }
+            .traits { font-size: 14px; color: #b9bbbe; margin-top: 10px; }
+            .stat-item { margin-bottom: 8px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">Player Stats</div>
+            <div class="stats">
+                <div class="stat-item">Level: {{ level }}</div>
+                <div class="stat-item">Time Eliminated: {{ time_eliminated }} seconds</div>
+                <div class="stat-item">Last Round: {{ last_round }}</div>
+                <div class="stat-item">Total Damage to Players: {{ total_damage_to_players }}</div>
+                <div class="stat-item">Players Eliminated: {{ players_eliminated }}</div>
+                <div class="stat-item">Rating: {{ player_rating }} ({{ player_rating_numeric }})</div>
+            </div>
+            <div class="traits">
+                <strong>Traits:</strong> {{ traits }}
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    # Render the HTML with Jinja2
+    template = Template(html_template)
+    rendered_html = template.render(**player_data)
+
+    # Save the rendered HTML to a temporary file
+    html_file_path = os.path.join(folder_path, 'player_stats.html')
+    with open(html_file_path, 'w', encoding='utf-8') as f:
+        f.write(rendered_html)
+
+    # Set up Selenium for headless operation
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-gpu")
+    driver = webdriver.Chrome(options=chrome_options)
+
+    try:
+        # Open the HTML file in Selenium
+        driver.get("file://" + os.path.abspath(html_file_path))
+        time.sleep(1)  # Wait for the page to fully render
+
+        # Capture screenshot using the updated method
+        screenshot_path = os.path.join(folder_path, 'player_stats.png')
+        element = driver.find_element(By.TAG_NAME, "body")  # Capture the whole page
+        element.screenshot(screenshot_path)  # Save screenshot as a PNG file
+        print(f"Player stats image saved to {screenshot_path}")
+
+        return screenshot_path  # Return path to the screenshot
+    finally:
+        driver.quit()
+        os.remove(html_file_path)
+
+
+def show_unit_layout():
+    # Placeholder for actual unit layout and tribes info
+    layout_info = "Units placed: [Unit1, Unit2, ...]\nTribes: 3"  # Replace with real data as needed
+    return layout_info
+
+def load_percentile_data(file_path):
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+    return data
+
+def show_win_rate_graph():
+    # Ensure the directory and file pattern
+    directory = 'outputs'  # Ensure this path exists
+    pattern = 'tft_percentiles.json'
+    json_files = glob.glob(os.path.join(directory, pattern))
+
+    if not json_files:
+        raise FileNotFoundError(f"No files matching the pattern {pattern} found in directory {directory}")
+
+    # Load JSON data
+    json_file = json_files[0]
+    data = load_percentile_data(json_file)
+    
+    # Extract stages and win rates
+    stages = list(range(1, len(json.loads(data['percentiles'][0]['board_strength'])) + 1))
+    win_rates = []
+    
+    for percentile in data['percentiles']:
+        board_strength = json.loads(percentile['board_strength'])
+        if len(board_strength) == len(stages):
+            win_rates.append(board_strength[0])
+
+    # Adjust lengths if necessary
+    if len(win_rates) < len(stages):
+        stages = stages[:len(win_rates)]
+    elif len(win_rates) > len(stages):
+        win_rates = win_rates[:len(stages)]
+    
+    if len(stages) != len(win_rates):
+        raise ValueError(f"stages and win_rates must have the same length, but have shapes {len(stages)} and {len(win_rates)}")
+
+    # Plotting
+    plt.figure()
+    plt.plot(stages, win_rates, marker='o')
+    plt.title("Win Rate per Stage")
+    plt.xlabel("Stage")
+    plt.ylabel("Win Rate (%)")
+
+    # Save plot as an image file
+    output_path = os.path.join(directory, 'win_rate_graph.png')
+    plt.savefig(output_path)
+    plt.close()  # Close the plot to free memory
+
+    return output_path  # Return the file path for Discord
 
 if __name__ == "__main__":
     # Place any testing or standalone code here
     riot_id = "beggy"
     tag = "3105"
     profile_data = get_tft_profile(riot_id, tag)
-
+    # unit_item_processed = get_tft_unit_items_processed()
+    # tft_percentiles = get_tft_percentiles()
+    player_stats = show_player_stats(profile_data)
+    
     create_match_summary(profile_data)
 
     # create_match_summary(profile_data, True)
