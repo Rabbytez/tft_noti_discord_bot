@@ -3,7 +3,7 @@ import logging
 import time
 from discord.ext import commands, tasks
 from config import TOKEN, CHAT_ROOM_ID,RIOT_IDS
-from main import get_tft_profile, create_match_summary , show_player_stats, show_unit_layout, show_win_rate_graph
+from main import get_tft_profile, create_match_summary , show_match_detail, show_unit_layout, show_win_rate_graph , get_latest_match_data
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -69,7 +69,7 @@ async def latest_match(ctx, riot_id: str, tag: str):
             message = await ctx.send(file=discord.File(file, image_name))
 
         # Add reactions for emoji interactions
-        await message.add_reaction("📊")  # Player stats
+        await message.add_reaction("📊")  # Match detail
         await message.add_reaction("📐")  # TFT unit layout and tribes
         await message.add_reaction("📈")  # Win rate per stage graph
 
@@ -88,8 +88,8 @@ async def on_reaction_add(reaction, user):
     latest_match_data = get_latest_match_data()  # Fetch match data as needed
 
     if reaction.emoji == "📊":
-        player_stats_image = show_player_stats(latest_match_data)
-        await reaction.message.channel.send(file=discord.File(player_stats_image, 'player_stats.png'))
+        player_stats_image = show_match_detail(latest_match_data)
+        await reaction.message.channel.send(file=discord.File(player_stats_image, 'match_detail.png'))
     elif reaction.emoji == "📐":
         layout_info = show_unit_layout(latest_match_data)
         await reaction.message.channel.send(f"{user.mention} Here is the unit layout info:\n{layout_info}")
