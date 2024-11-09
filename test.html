@@ -1,0 +1,778 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Match Rounds</title>
+    <style>
+        body {
+            font-family: "Noto Sans", serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            background-color: #242944;
+            color: #f7f7f7;
+            display: flex;
+            justify-content: start;
+            align-items: flex-start;
+            height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            padding: 20px;
+            background-color: #2c2f33;
+            max-width: 786px;
+            position: relative;
+            justify-content: start;
+        }
+        .summary-container {
+            display: flex;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            min-height: 150px;
+            max-height: 150px;
+            width: 100%;  
+        }
+
+        .summary {
+            font-size: 14px;
+            margin-right: 10px;
+            border: 2px solid #ffffff;
+            min-width: 170px;
+            max-width: 230px;
+            border-radius: 5px;
+            padding: 8px;
+            background-color: #3f4247;
+            flex-grow: 0;  
+            width: auto; 
+        }
+
+        /* Add a new class for the third summary to fill the space */
+        .summary-third {
+            font-size: 13px;
+            border: 2px solid #ffffff;
+            max-width: 370px;
+            border-radius: 5px;
+            padding: 8px;
+            background-color: #3f4247;
+            flex-grow: 1;  /* This will make it stretch to fill the remaining space */
+            width: auto;
+        }
+        .summary strong {
+            color: #FFFFFF; /* Bright white for contrast */
+            font-size: 16px; /* Increase font size */
+            display: block; /* Ensure it takes full width */
+            margin-bottom: 3px; /* Add some spacing */
+        }
+        .summary-third strong {
+            font-size: 16px; /* Slightly smaller font size */
+            display: block; /* Ensure it takes full width */
+            margin-bottom: 3px; /* Add some spacing */
+        }
+        .rounds-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: start;
+            margin-top: 160px;
+            border: 2px solid #ffffff;
+            background-color: #37436d;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .rounds-container-name{
+            display: flex;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            position: relative;
+            margin-bottom: 5px;
+            
+        }
+        .round-tile {
+            width: 30px;
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            border-radius: 4px;
+            border: 2.5px solid #ffffff;
+            color: #ffffff;
+            padding: 6px;
+            margin: 2px;
+        }
+        .round-tile.victory { background-color: #4CAF50; }
+        .round-tile.defeat { background-color: #F44336; }
+        .stage-container {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .overall-score-text {
+            color: #FFD700; /* Bright yellow color */
+            font-style: italic; /* Optional: make the text italic */
+            font-weight: bold; /* Optional: make the text bold */
+        }
+        .stage-number {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .stage-title {
+            font-size: 8px;
+            font-weight: normal;
+            margin-bottom: 0px;
+        }
+        .result-text {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .round-info {
+            font-size: 11px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .gold-icon {
+            margin-left: 2px;
+        }
+        .reroll-icon {
+            align-self: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="summary-container">
+            <div class="summary">
+                <strong>💰 Economy 💰</strong>
+                Total Gold Spent : 117<br>
+                Total Rerolls Spent : 112<br>
+                ECO Rank : A
+            </div>
+            <div class="summary">
+                <strong>🔥 Performance 🔥</strong>
+                Total Repositions : 74<br>
+                Average APM : 33.37<br>
+                Win Rate : 66.67%<br>
+                Final Rank : 2
+            </div>
+            <div class="summary-third">
+                <strong>🏆 Game Summary 🏆</strong>
+                <span class="overall-score-text">Did you think the shop was a slot machine? More APM than a competitive eSports player. Respect. You're in the upper echelon! Well played. Winning more than losing. Keep it up! At least the enemy knows you’re there now.<br></span>
+            </div>
+        </div>
+        <div class="rounds-container">
+            <div class="rounds-container-name">Rounds</div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">1-2</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        13
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        2
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">1-4</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        0
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">2-1</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        8
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        6
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">2-2</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        1
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">2-3</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        3
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        6
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">2-4</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        6
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">2-6</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        3
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">2-7</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        1
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">3-1</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        0
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">3-2</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        2
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">3-3</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        2
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">3-4</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        1
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">3-6</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        1
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">3-7</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        0
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">4-1</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        6
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        4
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">4-2</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        3
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">4-3</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        1
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">4-5</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        7
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        2
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">4-6</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        2
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">4-7</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        1
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">5-1</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        11
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        3
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">5-2</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        7
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">5-3</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        4
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        5
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">5-5</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        2
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">5-6</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        5
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">5-7</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        33
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        14
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">6-1</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        21
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        7
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile victory">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">6-2</div>
+                </div>
+                <div class="result-text">
+                    W
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        3
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">6-3</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        0
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        3
+                    </div>
+                </div>
+            </div>
+            
+            <div class="round-tile defeat">
+                <div class="stage-container">
+                    <div class="stage-title">Round</div>
+                    <div class="stage-number">6-4</div>
+                </div>
+                <div class="result-text">
+                    L
+                </div>
+                <div class="round-info">
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/gold2.png" alt="Gold Icon" class="gold-icon" style="width: 12px;">
+                        11
+                    </div>
+                    <div class="info-item">
+                        <img src="https://www.metatft.com/icons/reroll_default.png" alt="Reroll Icon" class="reroll-icon" style="width: 16px;">
+                        19
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>
