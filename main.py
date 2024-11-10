@@ -8,43 +8,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from jinja2 import Template
+from augments import augment_data
+from get_profile_data import get_profile_data
 import time
 import re
 from augments import augment_data
 
-folder_path="outputs/"
-
-def get_tft_profile(riot_id, tag, tft_set="TFTSet12", include_revival_matches=True):
-    base_url = "https://api.metatft.com/public/profile/lookup_by_riotid"
-    path = f"/TH2/{riot_id}/{tag}"
-    params = {
-        "source": "full_profile",
-        "tft_set": tft_set,
-        "include_revival_matches": str(include_revival_matches).lower(),
-    }
-
-    headers = {
-        "Accept": "application/json, text/plain, */*",
-        "Accept-Encoding": "gzip, deflate, br, zstd",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Origin": "https://www.metatft.com",
-        "Referer": "https://www.metatft.com/",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-    }
-    refresh_url=f'https://api.metatft.com/public/profile/refresh_by_riotid/TH2/{riot_id}/{tag}?tier=1'
-    response = requests.post(f"{refresh_url}", headers=headers)
-
-
-    response = requests.get(f"{base_url}{path}", headers=headers, params=params)
-
-    if response.status_code == 200:
-        data = response.json()
-        # Save the data to a JSON file
-        save_json_to_file(data, folder_path, f"{riot_id}_{tag}_profile.json")
-        return data
-    else:
-        response.raise_for_status()
-
+folder_path = "outputs/"
 
 def save_json_to_file(data, folder_path, file_name):
     os.makedirs(folder_path, exist_ok=True)
@@ -52,7 +22,6 @@ def save_json_to_file(data, folder_path, file_name):
     with open(file_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
     print(f"Data saved to {file_path}")
-
 
 def get_meme_url_by_placement(placement):
     # Define the meme URLs based on placement
@@ -126,7 +95,6 @@ def get_lp_change_color(lp_change):
     """Return a CSS class based on LP change."""
     return "green" if lp_change > 0 else "red"
 
-
 def format_time_elapsed(seconds):
     """Convert seconds into a human-readable format."""
     days, seconds = divmod(seconds, 86400)  # 86400 seconds in a day
@@ -144,7 +112,6 @@ def format_time_elapsed(seconds):
         time_components.append(f"{int(seconds)}s")
 
     return " ".join(time_components) + " ago"
-
 
 def create_match_summary(profile_data, shcedule_run=False):
     # Extract relevant data from profile_data
@@ -928,7 +895,7 @@ if __name__ == "__main__":
     # Place any testing or standalone code here
     riot_id = "beggy"
     tag = "3105"
-    profile_data = get_tft_profile(riot_id, tag)
+    profile_data = get_profile_data(riot_id, tag)
 
     create_match_summary(profile_data)
 
