@@ -1,7 +1,6 @@
 
 import json
 import os
-from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -9,9 +8,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from jinja2 import Template
 from augments import augment_data
-from json_create_dict import organize_stage_data
 import time
-import matplotlib.pyplot as plt
+
 
 
 def get_meme_url_by_placement(placement):
@@ -29,7 +27,6 @@ def get_meme_url_by_placement(placement):
     }
     # Return the meme URL based on placement, default to the last meme if not found
     return meme_urls.get(placement, meme_urls[9])
-
 
 rank_data = {
     "Iron": {
@@ -73,7 +70,6 @@ rank_data = {
         "color": "#ff6347",  # Tomato color for Challenger
     },
 }
-
 
 # Function to get rank icon and color
 def get_rank_icon_and_color(rating_text):

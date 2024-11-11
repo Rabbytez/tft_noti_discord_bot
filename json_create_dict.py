@@ -1,17 +1,8 @@
 import json
 
 def organize_stage_data(data):
-    """
-    Organizes stage data from the input JSON by stages in a readable format.
 
-    Parameters:
-    - data: The JSON data containing "stage_data".
-
-    Returns:
-    - organized_data: A dictionary with stage identifiers as keys and stage data as values.
-    """
     stage_data = data.get("stage_data", {})
-
     organized_data = {}
 
     if isinstance(stage_data, dict):
