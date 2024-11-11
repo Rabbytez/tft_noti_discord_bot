@@ -52,6 +52,4 @@ if __name__ == "__main__":
     riot_id = "beggy"
     tag = "3105"
     profile_data = get_tft_profile(riot_id, tag)
-    match_rounds_report = generate_match_rounds_report(
-        riot_id, tag, profile_data, folder_path
-    )
+

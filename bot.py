@@ -3,7 +3,10 @@ import logging
 import time
 from discord.ext import commands, tasks
 from config import TOKEN, CHAT_ROOM_ID,RIOT_IDS
-from main import get_tft_profile, create_match_summary , show_match_detail, generate_match_rounds_report
+from main import get_tft_profile
+from create_match_summary import create_match_summary
+from match_rounds_report import generate_match_rounds_report
+from show_match_detail import show_match_detail
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -162,9 +165,9 @@ async def on_reaction_add(reaction, user):
             await reaction.message.channel.send(file=discord.File(rounds_image, 'match_rounds.png'))
         
         # elif reaction.emoji == "📈":
-        #     # Generate win rate graph
-        #     win_rate_graph = show_win_rate_graph()
-        #     await reaction.message.channel.send(file=discord.File(win_rate_graph, 'win_rate_graph.png'))
+            # Generate win rate graph
+            # win_rate_graph = show_win_rate_graph()
+            # await reaction.message.channel.send(file=discord.File(win_rate_graph, 'win_rate_graph.png'))
 
         # Optional cleanup
         message_riot_data.pop(message_id, None)
