@@ -1,0 +1,148 @@
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFT Match Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .match-summary {
+            background-color: #2e2e2e;
+            border-radius: 10px;
+            padding: 20px;
+            width: 700px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .match-summary .rank {
+            font-size: 1.2em;
+            color: #8aeb7f;
+            margin-bottom: 5px;
+        }
+
+        .match-summary img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .rank-icon {
+            font-weight: bold;
+            color: #8aeb7f;
+            display: flex;
+            align-items: center;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+
+        .rank-icon img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .summary-details {
+            flex: 1;
+            padding: 0 15px;
+        }
+
+        .player-info {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #fdd835;
+            display: flex;
+            align-items: center;
+        }
+
+        .lp-change {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: red;
+            margin-top: 5px;
+        }
+
+        .match-info {
+            color: #bbb;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .champion-list {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .champion {
+            text-align: center;
+            position: relative;
+        }
+
+        .champion img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+        }
+
+        .champion .stars {
+            font-size: 0.8em;
+            color: gold;
+            font-weight: bold;
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+
+<div class="match-summary">
+    <img src="https://example.com/path-to-image.png" alt="Profile Picture">
+    
+    <div class="summary-details">
+        <div class="player-info">beggy#3105 <span style="font-size: 0.8em; color: #bbb; margin-left: 5px;">3rd</span></div>
+        
+        <div class="rank-icon">
+            <img src="https://example.com/path-to-rank-icon.png" alt="Rank Icon">
+            EMERALD IV 5 LP
+        </div>
+        
+        <div class="match-info">
+            Time: 47m 48s ago<br>
+            Match Duration: 34m 8s
+        </div>
+        
+        <div class="lp-change">LP: -15 LP</div>
+        
+        <div class="champion-list">
+            <div class="champion">
+                <img src="https://example.com/path-to-champion1.png" alt="Champion 1">
+                <div class="stars">★★★</div>
+            </div>
+            <div class="champion">
+                <img src="https://example.com/path-to-champion2.png" alt="Champion 2">
+                <div class="stars">★★</div>
+            </div>
+            <!-- Add more champions similarly -->
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
