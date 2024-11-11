@@ -3,7 +3,8 @@ import logging
 import time
 from discord.ext import commands, tasks
 from config import TOKEN, CHAT_ROOM_ID,RIOT_IDS
-from main import get_tft_profile, create_match_summary
+from main import get_profile_data
+from match_summary import create_match_summary
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -44,7 +45,7 @@ async def join_voice(ctx):
 async def latest_match(ctx, riot_id: str, tag: str):
     try:
         # Fetch profile data
-        profile_data = get_tft_profile(riot_id, tag)
+        profile_data = get_profile_data(riot_id, tag)
 
         # Check for the presence of 'summoner' and 'matches' keys
         if 'summoner' not in profile_data:
@@ -85,11 +86,7 @@ async def chech_lasted_match():
 
         try:
             # Fetch profile data
-            profile_data = get_tft_profile(riot_id, tag)
-
-
-            # Get the latest match by timestamp
-            # latest_match = max(profile_data["matches"], key=lambda x: x.get("match_timestamp", 0))
+            profile_data = get_profile_data(riot_id, tag)
 
             # Generate the match summary banner using HTML and capture it as an image
             image_name=create_match_summary(profile_data,True)

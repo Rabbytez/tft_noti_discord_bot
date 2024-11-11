@@ -8,241 +8,7 @@ from collections.abc import Iterable
 import time
 import os
 import json
-
-champion_assets = {
-        "Ashe": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Ashe.png",
-            "price": 1,
-        },
-        "Blitzcrank": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Blitzcrank.png",
-            "price": 1,
-        },
-        "Elise": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Elise.png",
-            "price": 1,
-        },
-        "Jax": {"url": "https://rerollcdn.com/characters/Skin/12/Jax.png", "price": 1},
-        "Jayce": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Jayce.png",
-            "price": 1,
-        },
-        "Lillia": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Lillia.png",
-            "price": 1,
-        },
-        "Nomsy": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Nomsy.png",
-            "price": 1,
-        },
-        "Poppy": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Poppy.png",
-            "price": 1,
-        },
-        "Seraphine": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Seraphine.png",
-            "price": 1,
-        },
-        "Soraka": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Soraka.png",
-            "price": 1,
-        },
-        "Twitch": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Twitch.png",
-            "price": 1,
-        },
-        "Warwick": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Warwick.png",
-            "price": 1,
-        },
-        "Ziggs": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Ziggs.png",
-            "price": 1,
-        },
-        "Zoe": {"url": "https://rerollcdn.com/characters/Skin/12/Zoe.png", "price": 1},
-        "Ahri": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Ahri.png",
-            "price": 2,
-        },
-        "Akali": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Akali.png",
-            "price": 2,
-        },
-        "Cassiopeia": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Cassiopeia.png",
-            "price": 2,
-        },
-        "Galio": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Galio.png",
-            "price": 2,
-        },
-        "Kassadin": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Kassadin.png",
-            "price": 2,
-        },
-        "KogMaw": {
-            "url": "https://rerollcdn.com/characters/Skin/12/KogMaw.png",
-            "price": 2,
-        },
-        "Nilah": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Nilah.png",
-            "price": 2,
-        },
-        "Nunu": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Nunu.png",
-            "price": 2,
-        },
-        "Rumble": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Rumble.png",
-            "price": 2,
-        },
-        "Shyvana": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Shyvana.png",
-            "price": 2,
-        },
-        "Syndra": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Syndra.png",
-            "price": 2,
-        },
-        "Tristana": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Tristana.png",
-            "price": 2,
-        },
-        "Zilean": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Zilean.png",
-            "price": 2,
-        },
-        "Bard": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Bard.png",
-            "price": 3,
-        },
-        "Ezreal": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Ezreal.png",
-            "price": 3,
-        },
-        "Hecarim": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Hecarim.png",
-            "price": 3,
-        },
-        "Hwei": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Hwei.png",
-            "price": 3,
-        },
-        "Jinx": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Jinx.png",
-            "price": 3,
-        },
-        "Katarina": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Katarina.png",
-            "price": 3,
-        },
-        "Mordekaiser": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Mordekaiser.png",
-            "price": 3,
-        },
-        "Neeko": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Neeko.png",
-            "price": 3,
-        },
-        "Shen": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Shen.png",
-            "price": 3,
-        },
-        "Swain": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Swain.png",
-            "price": 3,
-        },
-        "Veigar": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Veigar.png",
-            "price": 3,
-        },
-        "Vex": {"url": "https://rerollcdn.com/characters/Skin/12/Vex.png", "price": 3},
-        "Wukong": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Wukong.png",
-            "price": 3,
-        },
-        "Fiora": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Fiora.png",
-            "price": 4,
-        },
-        "Gwen": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Gwen.png",
-            "price": 4,
-        },
-        "Kalista": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Kalista.png",
-            "price": 4,
-        },
-        "Karma": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Karma.png",
-            "price": 4,
-        },
-        "Nami": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Nami.png",
-            "price": 4,
-        },
-        "Nasus": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Nasus.png",
-            "price": 4,
-        },
-        "Olaf": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Olaf.png",
-            "price": 4,
-        },
-        "Rakan": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Rakan.png",
-            "price": 4,
-        },
-        "Ryze": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Ryze.png",
-            "price": 4,
-        },
-        "TahmKench": {
-            "url": "https://rerollcdn.com/characters/Skin/12/TahmKench.png",
-            "price": 4,
-        },
-        "Taric": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Taric.png",
-            "price": 4,
-        },
-        "Varus": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Varus.png",
-            "price": 4,
-        },
-        "Briar": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Briar.png",
-            "price": 5,
-        },
-        "Camille": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Camille.png",
-            "price": 5,
-        },
-        "Diana": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Diana.png",
-            "price": 5,
-        },
-        "Milio": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Milio.png",
-            "price": 5,
-        },
-        "Morgana": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Morgana.png",
-            "price": 5,
-        },
-        "Norra": {
-            "url": "https://cdn.metatft.com/cdn-cgi/image/width=48,height=48,format=auto/https://cdn.metatft.com/file/metatft/champions/tft12_norra.png",
-            "price": 5,
-        },
-        "Smolder": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Smolder.png",
-            "price": 5,
-        },
-        "Xerath": {
-            "url": "https://rerollcdn.com/characters/Skin/12/Xerath.png",
-            "price": 5,
-        },
-    }
-
+from chamption_assets import get_champion_assets
 
 def create_match_summary(profile_data):
     # Accessing profile and summoner info
@@ -300,6 +66,7 @@ def create_match_summary(profile_data):
     print(f"Formatted Units: {formatted_units}")
 
     # Populate champions data using champion_assets
+    champion_assets = get_champion_assets()
     champions = []
     for unit in units:
         champion_name = unit["slug"].capitalize()
@@ -389,6 +156,14 @@ def create_match_summary(profile_data):
                 </div>
                 {% endfor %}
             </div>
+            {% for unit in units %}
+                <h2>{{ unit.name }}</h2>
+                <ul>
+                    {% for item in unit['items'] %}
+                        <li>{{ item.name }} - <img src="{{ item.url }}"></li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
         </div>
     </body>
     </html>
@@ -397,7 +172,7 @@ def create_match_summary(profile_data):
     # Render the HTML with Jinja2
     template = Template(html_template)
     rendered_html = template.render(
-        formatted_units=formatted_units,
+        units=formatted_units,  # Changed this line
         summoner_name=summoner_name,
         summoner_tag=summoner_tag,
         rank_tier=rank_tier,
@@ -442,6 +217,77 @@ def create_match_summary(profile_data):
     finally:
         driver.quit()
         os.remove(html_path)
+
+# Match details
+def format_match_details(latest_match, items_data):
+    # Validate inputs
+    if not isinstance(latest_match, dict):
+        raise ValueError("latest_match must be a dictionary")
+    if not isinstance(items_data, dict):
+        raise ValueError("items_data must be a dictionary")
+
+    # Create item name to slug mapping
+    item_name_to_slug = {
+        item['flatData']['name']: item['flatData']['slug']
+        for item in items_data.get('data', {}).get('items', [])
+    }
+
+    # Extract match details with proper defaults
+    placement = int(latest_match.get("placement", 0))
+    traits = list(latest_match.get("traits", []))
+    units = list(latest_match.get("units", []))
+    lp_info = dict(latest_match.get("lp", {}).get("after", {}))
+    lp_diff = int(latest_match.get("lp", {}).get("lpDiff", 0))
+
+    # Format traits ensuring list output
+    formatted_traits = [
+        f"{trait['slug'].capitalize()} ({trait['numUnits']} units)" 
+        for trait in traits if isinstance(trait, dict)
+    ]
+
+    # Format units
+    formatted_units = []
+    for unit in units:
+        if not isinstance(unit, dict):
+            continue
+            
+        unit_name = unit.get("slug", "").capitalize()
+        unit_items = list(unit.get("items", []))
+        
+        # Process items
+        items_info = []
+        for item_name in unit_items:
+            if not isinstance(item_name, str):
+                continue
+                
+            try:
+                item_slug = item_name_to_slug.get(item_name)
+                item_image_url = (
+                    f"https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/"
+                    f"{item_slug or item_name.lower().replace(' ', '-')}.png?v=60"
+                )
+                
+                items_info.append({
+                    "name": str(item_name),
+                    "url": str(item_image_url)
+                })
+            except (AttributeError, TypeError) as e:
+                print(f"Error processing item {item_name}: {str(e)}")
+                continue
+
+        formatted_units.append({
+            "name": unit_name,
+            "items": items_info
+        })
+
+    # Return validated data structure
+    return {
+        "placement": placement,
+        "traits": formatted_traits,
+        "units": formatted_units,
+        "lp_info": lp_info,
+        "lp_diff": lp_diff
+    }
 
 # Test with your JSON data
 with open("v2_profile_data_beggy_3105.json", "r", encoding="utf-8") as f:
