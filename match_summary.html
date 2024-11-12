@@ -1,148 +1,426 @@
 
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TFT Match Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,553;1,553&display=swap" rel="stylesheet">
+    <title>Match Summary</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1a1a1a;
-            color: #fff;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
         }
-
+            
+        .container {
+            max-height: 325px;
+            max-width: 760px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            font-family: "Noto Sans", serif;
+            font-weight: 553;
+            font-style: normal;
+            padding: 25px;
+            position: relative;
+        }
+    
         .match-summary {
-            background-color: #2e2e2e;
-            border-radius: 10px;
-            padding: 20px;
-            width: 700px;
+            display: flex;
+            position: relative;
+            margin-top: 20px;
+            align-items: start;
+            justify-content: start;
+            max-height: 195px;
+        }
+
+        .profile-info {
             display: flex;
             align-items: center;
-            color: #fff;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
-
-        .match-summary .rank {
-            font-size: 1.2em;
-            color: #8aeb7f;
-            margin-bottom: 5px;
-        }
-
-        .match-summary img {
-            width: 80px;
-            height: 80px;
+        .profile-info img {
             border-radius: 50%;
-            margin-right: 15px;
+            width: 100px; /* Adjust the size as needed */
+            height: 100px;
+            object-fit: cover;
         }
-
-        .rank-icon {
+        .summary-details {
+            margin-left: 20px;
+        }
+        .profile-info {
+            display: flex;
+            align-items: start;
+            height: 100%;
+        }
+        .profile-info img {
+            border-radius: 4px;
+            width: 175px;
+            height: 175px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+        .lp-change .green {
+            color: green;
+        }
+        .lp-change .red {
+            color: red;
+        }
+        .champion-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .champion {
+            position: relative;
+            margin: 5px;
+            text-align: center;
+        }
+        .champion img {
+            width: 55px;
+            height: 55px;
+            border-radius: 10px;
+        }
+        .champion .stars {
+            font-size: 1.0em;
+            color: gold;
             font-weight: bold;
-            color: #8aeb7f;
+            position: absolute;
+            bottom: 17px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .items {
+            margin-top: 5px;
+            display: flex;
+            justify-content: center;
+        }
+        .items img {
+            width: 16px;
+            height: 16px;
+            margin: 0 1px;
+        }
+        .rank-icon {
             display: flex;
             align-items: center;
-            font-size: 1em;
-            margin-right: 10px;
         }
-
         .rank-icon img {
             width: 20px;
             height: 20px;
             margin-right: 5px;
         }
-
-        .summary-details {
-            flex: 1;
-            padding: 0 15px;
-        }
-
-        .player-info {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #fdd835;
+        .stat-bar {
             display: flex;
+            flex-direction: row;
+            justify-content: start;
+            margin-bottom: 20px;
+            max-height: 120px;
+        }
+        .stat-container {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: flex-end;
+            margin-left: 25px;
+            margin-right: 15px;
+
+        }
+        .traits-list {
+            display: flex;
+            max-width: 400px;
+            padding: 15px;
+            flex-wrap: wrap;
+            margin-left: 25px;
+            padding-bottom: 6px;
+            background-color: #2e2e2e;
+            border-radius: 10px;
             align-items: center;
         }
 
-        .lp-change {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: red;
-            margin-top: 5px;
-        }
-
-        .match-info {
-            color: #bbb;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-
-        .champion-list {
+        .trait {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 10px;
+            margin-bottom: 10px;
         }
 
-        .champion {
+        .trait img {
+            width: 18px;  /* Adjust size as needed */
+            height: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .trait-text {
+            font-size: 0.6em;  /* Smaller text size */
             text-align: center;
-            position: relative;
         }
-
-        .champion img {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
+        .placement-container {
+            display: flex;
+            flex-direction: column;
+            margin-left: 10px;
+            align-items: center;
         }
-
-        .champion .stars {
-            font-size: 0.8em;
-            color: gold;
+        .placement-number {
+            font-size: 3.2em;
             font-weight: bold;
+        }
+        .game-mode {
+            display: contents;
+            align-items: start;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .time-patch {
+            font-size: 0.6em;
+        }
+        .first-container {
+            display: flex;
+            flex-direction: row;
+            padding: 15px;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+        }
+        .augments-detail {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: start;
+            max-width": 75px;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+        }
+        .glow-container {
             position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
+            display: contents;
+            box-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6);
+            border-radius: 10px; 
+            padding: 5px; 
         }
     </style>
 </head>
 <body>
-
-<div class="match-summary">
-    <img src="https://example.com/path-to-image.png" alt="Profile Picture">
-    
-    <div class="summary-details">
-        <div class="player-info">beggy#3105 <span style="font-size: 0.8em; color: #bbb; margin-left: 5px;">3rd</span></div>
-        
-        <div class="rank-icon">
-            <img src="https://example.com/path-to-rank-icon.png" alt="Rank Icon">
-            EMERALD IV 5 LP
+<div class="container">
+    <div class="stat-bar">
+        <div class="first-container">
+            <div class="placement-container">
+                <div class="placement-number">1</div>
+                <div class="lp-change"><span class="green">+32 LP</span></div>
+            </div>
+            <div class="stat-container">
+                <div class="time-patch">2 days ago Patch-14.22</div>
+                <div class="game-mode">Ranked</div>
+                <div class="player-info">beggy#3105</div>
+                <div class="rank-icon">
+                    <img src="https://cdn.metatft.com/file/metatft/ranks/emerald.png" alt="Rank Icon">
+                    IV 2047 LP
+                </div>
+            </div>
         </div>
-        
-        <div class="match-info">
-            Time: 47m 48s ago<br>
-            Match Duration: 34m 8s
+        <div class="augments-detail">
+            <!-- Augments details can be added here -->
         </div>
-        
-        <div class="lp-change">LP: -15 LP</div>
-        
+        <div class="traits-list">
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-bastion.svg?v=61" alt="bastion">
+                <div class="trait-text">bastion 6</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-portal.svg?v=61" alt="portal">
+                <div class="trait-text">portal 3</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-arcana.svg?v=61" alt="arcana">
+                <div class="trait-text">arcana 2</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-warrior.svg?v=61" alt="warrior">
+                <div class="trait-text">warrior 2</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-witchcraft.svg?v=61" alt="witchcraft">
+                <div class="trait-text">witchcraft 2</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-ascendant.svg?v=61" alt="ascendant">
+                <div class="trait-text">ascendant 1</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-explorer.svg?v=61" alt="explorer">
+                <div class="trait-text">explorer 1</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-frost.svg?v=61" alt="frost">
+                <div class="trait-text">frost 1</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-honeymancy.svg?v=61" alt="honeymancy">
+                <div class="trait-text">honeymancy 1</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-mage.svg?v=61" alt="mage">
+                <div class="trait-text">mage 1</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-multistriker.svg?v=61" alt="multistriker">
+                <div class="trait-text">multistriker 1</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-scholar.svg?v=61" alt="scholar">
+                <div class="trait-text">scholar 1</div>
+            </div>
+            
+            <div class="trait">
+                <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-sugarcraft.svg?v=61" alt="sugarcraft">
+                <div class="trait-text">sugarcraft 1</div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="match-summary">
+        <div class="profile-info">
+            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/1393.png?1" alt="Profile Picture">
+        </div>
         <div class="champion-list">
+            
             <div class="champion">
-                <img src="https://example.com/path-to-champion1.png" alt="Champion 1">
-                <div class="stars">★★★</div>
+                <img src="https://rerollcdn.com/characters/Skin/12/Zoe.png" alt="Zoe">
+                    <div class="glow-container">
+                        <div class="stars">★★★</div>
+                    </div>
+                <div class="items">
+                    
+                </div>
             </div>
+            
             <div class="champion">
-                <img src="https://example.com/path-to-champion2.png" alt="Champion 2">
-                <div class="stars">★★</div>
+                <img src="https://rerollcdn.com/characters/Skin/12/Poppy.png" alt="Poppy">
+                    <div class="glow-container">
+                        <div class="stars">★★★</div>
+                    </div>
+                <div class="items">
+                    
+                </div>
             </div>
-            <!-- Add more champions similarly -->
+            
+            <div class="champion">
+                <img src="https://rerollcdn.com/characters/Skin/12/Nunu.png" alt="Nunu">
+                    <div class="glow-container">
+                        <div class="stars">★★</div>
+                    </div>
+                <div class="items">
+                    
+                </div>
+            </div>
+            
+            <div class="champion">
+                <img src="https://rerollcdn.com/characters/Skin/12/Hecarim.png" alt="Hecarim">
+                    <div class="glow-container">
+                        <div class="stars">★★</div>
+                    </div>
+                <div class="items">
+                    
+                </div>
+            </div>
+            
+            <div class="champion">
+                <img src="https://rerollcdn.com/characters/Skin/12/Gwen.png" alt="Gwen">
+                    <div class="glow-container">
+                        <div class="stars">★★</div>
+                    </div>
+                <div class="items">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/bastion.png?v=60" alt="bastion">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/titans-resolve.png?v=60" alt="titans-resolve">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/hand-of-justice.png?v=60" alt="hand-of-justice">
+                    
+                </div>
+            </div>
+            
+            <div class="champion">
+                <img src="https://rerollcdn.com/characters/Skin/12/Taric.png" alt="Taric">
+                    <div class="glow-container">
+                        <div class="stars">★★</div>
+                    </div>
+                <div class="items">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/redemption.png?v=60" alt="redemption">
+                    
+                </div>
+            </div>
+            
+            <div class="champion">
+                <img src="https://rerollcdn.com/characters/Skin/12/Diana.png" alt="Diana">
+                    <div class="glow-container">
+                        <div class="stars">★</div>
+                    </div>
+                <div class="items">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/warrior.png?v=60" alt="warrior">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/bloodthirster.png?v=60" alt="bloodthirster">
+                    
+                </div>
+            </div>
+            
+            <div class="champion">
+                <img src="https://rerollcdn.com/characters/Skin/12/Xerath.png" alt="Xerath">
+                    <div class="glow-container">
+                        <div class="stars">★★</div>
+                    </div>
+                <div class="items">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/archangels-staff.png?v=60" alt="archangels-staff">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/rabadons-deathcap.png?v=60" alt="rabadons-deathcap">
+                    
+                </div>
+            </div>
+            
+            <div class="champion">
+                <img src="https://cdn.metatft.com/cdn-cgi/image/width=48,height=48,format=auto/https://cdn.metatft.com/file/metatft/champions/tft12_norra.png" alt="Norra-and-yuumi">
+                    <div class="glow-container">
+                        <div class="stars">★★</div>
+                    </div>
+                <div class="items">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/morellonomicon.png?v=60" alt="morellonomicon">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/spear-of-shojin2.png?v=60" alt="spear-of-shojin2">
+                    
+                    <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/guinsoos-rageblade.png?v=60" alt="guinsoos-rageblade">
+                    
+                </div>
+            </div>
+            
+            <div class="champion">
+                <img src="https://cdn.metatft.com/cdn-cgi/image/width=48,height=48,format=auto/https://cdn.metatft.com/file/metatft/champions/tft12_yuumi.png" alt="Yuumi">
+                    <div class="glow-container">
+                        <div class="stars">★★</div>
+                    </div>
+                <div class="items">
+                    
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>
-
 </body>
 </html>

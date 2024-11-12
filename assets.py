@@ -225,6 +225,14 @@ def get_champion_assets():
                 "url": "https://cdn.metatft.com/cdn-cgi/image/width=48,height=48,format=auto/https://cdn.metatft.com/file/metatft/champions/tft12_norra.png",
                 "price": 5,
             },
+            "Norra-and-yuumi": {
+                "url": "https://cdn.metatft.com/cdn-cgi/image/width=48,height=48,format=auto/https://cdn.metatft.com/file/metatft/champions/tft12_norra.png",
+                "price": 5,
+            },
+            "Yuumi": {
+                "url": "https://cdn.metatft.com/cdn-cgi/image/width=48,height=48,format=auto/https://cdn.metatft.com/file/metatft/champions/tft12_yuumi.png",
+                "price": 5,
+            },
             "Smolder": {
                 "url": "https://rerollcdn.com/characters/Skin/12/Smolder.png",
                 "price": 5,

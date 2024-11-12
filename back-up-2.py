@@ -1,16 +1,12 @@
 import os
-import sys
 import json
-import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from main import get_profile_data, get_match_data
+from main import get_profile_data,get_match_data 
 from jinja2 import Template
-from datetime import datetime, timezone
-import pytz
 
 # Import the assets functions
 from assets import get_champion_assets, get_rank_assets
@@ -23,36 +19,6 @@ with open("tft_set12_items.json", "r", encoding="utf-8") as f:
 rank_data = get_rank_assets()
 champion_assets = get_champion_assets()
 
-def time_ago(match_time_str):
-    bangkok_tz = pytz.timezone('Asia/Bangkok')
-    # Parse the match time string into a datetime object
-    match_time = datetime.strptime(match_time_str, "%Y-%m-%dT%H:%M:%SZ")
-    match_time = match_time.replace(tzinfo=timezone.utc)
-
-    # Convert match time to Bangkok timezone
-    match_time = match_time.astimezone(bangkok_tz)
-
-    # Get the current time in Bangkok timezone
-    current_time = datetime.now(bangkok_tz)
-
-    # Calculate the difference
-    time_diff = current_time - match_time
-
-    # Format the difference in a human-readable way
-    days = time_diff.days
-    seconds = time_diff.seconds
-    hours = seconds // 3600
-    minutes = (seconds % 3600) // 60
-
-    if days > 0:
-        return f"{days} days ago"
-    elif hours > 0:
-        return f"{hours} hours ago"
-    elif minutes > 0:
-        return f"{minutes} minutes ago"
-    else:
-        return "just now"
-    
 # Function to get rank icon and color
 def get_rank_icon_and_color(rating_text):
     if not rating_text:
@@ -76,9 +42,6 @@ def puid_validation(profile_data):
 
 # Function to format match details
 def format_match_details(latest_match, items_data):
-    # Start timing this function
-    start_time = time.time()
-
     # Create item name to slug mapping
     item_name_to_slug = {
         item['flatData']['name']: item['flatData']['slug']
@@ -92,22 +55,21 @@ def format_match_details(latest_match, items_data):
     lp_diff = latest_match.get("lp", {}).get("lpDiff", 0)
 
     # Formatting traits
-    sorted_traits = sorted(traits, key=lambda x: x.get('numUnits', 0), reverse=True)
-    # url_img = f"https://raw.githubusercontent.com/Rabbytez/tft12_trait_rab/refs/heads/main/trait_img/"
-    url_img = "https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/"
+    url_img = f"https://raw.githubusercontent.com/Rabbytez/tft12_trait_rab/refs/heads/main/trait_img/"
     formatted_traits = []
-    for trait in sorted_traits:
+    for trait in traits:
         if isinstance(trait, dict):
-            trait_slug = trait.get('slug', '')
+            trait_slug = trait.get('slug', '').capitalize()
             trait_num_units = trait.get('numUnits', 0)
-            trait_icon_url = f"{url_img}24-{trait_slug}.svg?v=61"
+            parse_icon_url = f"{url_img}TFT12_{trait_slug}_{trait_num_units}.png"
+            trait_icon_url = parse_icon_url
 
             formatted_traits.append({
                 "name": trait_slug,
                 "num_units": trait_num_units,
                 "icon_url": trait_icon_url
             })
-
+    print(formatted_traits)
     formatted_champs = []
     for champ in champs:
         if not isinstance(champ, dict):
@@ -139,7 +101,7 @@ def format_match_details(latest_match, items_data):
         # Get champion image URL from assets
         champion_info = champion_assets.get(champ_name, {})
         champion_image_url = champion_info.get("url", "")
-        
+
         formatted_champs.append({
             "name": champ_name,
             "items": items_info,
@@ -147,23 +109,16 @@ def format_match_details(latest_match, items_data):
             "image_url": champion_image_url
         })
 
-    # End timing this function
-    end_time = time.time()
-    print(f"Time taken by format_match_details: {end_time - start_time:.4f} seconds")
-
     return {
         "placement": placement,
-        "traits": formatted_traits,
+        "traits": trait_icon_url,
         "champs": formatted_champs,
         "lp_info": lp_info,
         "lp_diff": lp_diff
     }
 
 # Function to create match summary
-def create_match_summary(profile_data, match_data):
-    # Start timing this function
-    start_time = time.time()
-
+def create_match_summary(profile_data):
     # Extract necessary data
     summoner_profile = profile_data.get("data", {}).get("tft", {}).get("profile", [])
     summoner_info = summoner_profile[0].get("profile", {})
@@ -171,10 +126,7 @@ def create_match_summary(profile_data, match_data):
     summoner_tag = summoner_info.get("info", {}).get("tagLine", "")
     rating_info = summoner_info.get("rank", {})
     rating_text = f"{rating_info.get('tier', '')} {rating_info.get('division', '')}"
-    latest_match_data = match_data.get("data", {}).get("tft", {}).get("matchV2", [])
-    match_time = time_ago(latest_match_data.get("date", {}))
-    
-    
+
     # Extract profile icon ID and construct URL
     puid = summoner_info.get("summonerInfo", {}).get("puuid", "")
     profile_icon_id = summoner_info.get("summonerInfo", {}).get("profileIcon", "")
@@ -199,6 +151,7 @@ def create_match_summary(profile_data, match_data):
 
     # Get game mode
     check_game_mode = latest_match.get("lp", {}).get("after", {}).get("rank", {}).get("__typename", {})
+    print(check_game_mode)
     game_mode = ""
     if check_game_mode == "SummonerRank":
         game_mode = "Ranked"
@@ -214,7 +167,8 @@ def create_match_summary(profile_data, match_data):
     traits = match_details["traits"]
     champs = match_details["champs"]
 
-    # HTML template
+
+# HTML template
     html_template = '''
 <!DOCTYPE html>
 <html lang="en">
@@ -348,7 +302,7 @@ def create_match_summary(profile_data, match_data):
             padding: 15px;
             flex-wrap: wrap;
             margin-left: 25px;
-            padding-bottom: 6px;
+            padding-bottom: 8px;
             background-color: #2e2e2e;
             border-radius: 10px;
             align-items: center;
@@ -363,11 +317,10 @@ def create_match_summary(profile_data, match_data):
         }
 
         .trait img {
-            width: 18px;  /* Adjust size as needed */
-            height: 18px;
+            width: 24px; /* Base width */
+            height: 24px; /* Base height */
             margin-bottom: 5px;
         }
-        
         .trait-text {
             font-size: 0.6em;  /* Smaller text size */
             text-align: center;
@@ -388,8 +341,8 @@ def create_match_summary(profile_data, match_data):
             font-size: 1.5em;
             font-weight: bold;
         }
-        .time-patch {
-            font-size: 0.6em;
+        .ver-patch {
+            font-size: 0.8em;
         }
         .first-container {
             display: flex;
@@ -427,9 +380,10 @@ def create_match_summary(profile_data, match_data):
                 <div class="lp-change"><span class="{{ lp_color }}">{{ lp_diff }} LP</span></div>
             </div>
             <div class="stat-container">
-                <div class="time-patch">{{ match_time }} Patch-{{ ver_patch }}</div>
+                <div class="ver-patch">{{ ver_patch }}</div>
                 <div class="game-mode">{{ game_mode }}</div>
                 <div class="player-info">{{ summoner_name }}#{{ summoner_tag }}</div>
+                <div class="match-time">{{ match_time }}</div>
                 <div class="rank-icon">
                     <img src="{{ rank_icon }}" alt="Rank Icon">
                     {{ rank_tier }} {{ lp_value }} LP
@@ -443,7 +397,7 @@ def create_match_summary(profile_data, match_data):
             {% for trait in traits %}
             <div class="trait">
                 <img src="{{ trait.icon_url }}" alt="{{ trait.name }}">
-                <div class="trait-text">{{ trait.name }} {{ trait.num_units }}</div>
+                <div class="trait-text">{{ trait.name }} ({{ trait.num_units }}) </div>
             </div>
             {% endfor %}
         </div>
@@ -489,7 +443,7 @@ def create_match_summary(profile_data, match_data):
         rating_text=rating_text,
         profile_icon_url=profile_icon_url,
         game_mode=game_mode,
-        match_time=match_time,
+        match_time="",
         ver_patch=ver_patch
     )
 
@@ -497,9 +451,6 @@ def create_match_summary(profile_data, match_data):
     html_file = 'match_summary.html'
     with open(html_file, 'w', encoding='utf-8') as f:
         f.write(rendered_html)
-
-    # Start timing Selenium operations
-    selenium_start_time = time.time()
 
     # Use Selenium to open the HTML and take a screenshot
     chrome_options = Options()
@@ -521,37 +472,14 @@ def create_match_summary(profile_data, match_data):
     finally:
         driver.quit()
 
-    # End timing Selenium operations
-    selenium_end_time = time.time()
-    print(f"Selenium operations took {selenium_end_time - selenium_start_time:.4f} seconds")
-
-    # End timing this function
-    end_time = time.time()
-    print(f"Time taken by create_match_summary: {end_time - start_time:.4f} seconds")
-
 # Test with your JSON data
 if __name__ == '__main__':
-    total_start_time = time.time()  # Start total execution timing
-
     match_id = "42590337"
     riotname = "beggy"
     tag = "3105"
 
-    try:
-        data_fetch_start_time = time.time()  # Start data fetching timing
-
-        profile_data = get_profile_data(riotname, tag)
-        match_data = get_match_data(match_id, riotname, tag)
-
-        data_fetch_end_time = time.time()  # End data fetching timing
-        print(f"Data fetching took {data_fetch_end_time - data_fetch_start_time:.4f} seconds")
-
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        sys.exit(1)
-
-    create_match_summary(profile_data, match_data)
-    puid = puid_validation(profile_data)
-
-    total_end_time = time.time()  # End total execution timing
-    print(f"Total script execution time: {total_end_time - total_start_time:.4f} seconds")
+    profile_data = get_profile_data(riotname, tag)
+    match_data = get_match_data(match_id,riotname, tag)
+    
+    create_match_summary(profile_data)
+    puid_validation(profile_data)
