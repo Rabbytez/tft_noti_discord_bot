@@ -41,10 +41,6 @@ def puid_validation(profile_data):
     puid = summoner_info.get("summonerInfo", {}).get("puuid", "")
     return puid
 
-def get_trait_img(trait_name):
-    trait_img = f"https://raw.githubusercontent.com/Rabbytez/tft12_trait_rab/refs/heads/main/trait_img/{trait_name}.png
-    return trait_img
-
 # Function to format match details
 def format_match_details(latest_match, items_data, match_data):
     # Create item name to slug mapping
@@ -54,23 +50,23 @@ def format_match_details(latest_match, items_data, match_data):
     }
 
     placement = latest_match.get("placement", 0)
-    traits = latest_match.get("traits", [])
+    trait_icon_url = get_trait_img(match_data)
     champs = latest_match.get("units", [])
     lp_info = latest_match.get("lp", {}).get("after", {})
     lp_diff = latest_match.get("lp", {}).get("lpDiff", 0)
 
-    # Formatting traits
-    formatted_traits = []
-    for trait in traits:
-        if isinstance(trait, dict):
-            trait_slug = trait.get('slug', '')
-            trait_icon_url = trait.get('icon', '')
-            print(trait_icon_url)
-            formatted_traits.append({
-                'name': trait_slug.capitalize(),
-                'num_units': trait.get('numUnits', 0),
-                'icon_url': trait_icon_url
-            })
+    # # Formatting traits
+    # formatted_traits = []
+    # for trait in traits:
+    #     if isinstance(trait, dict):
+    #         trait_slug = trait.get('slug', '')
+    #         trait_icon_url = get_trait_img(trait_slug)
+    #         print(trait_icon_url)
+    #         formatted_traits.append({
+    #             'name': trait_slug.capitalize(),
+    #             'num_units': trait.get('numUnits', 0),
+    #             'icon_url': trait_icon_url
+    #         })
             
     formatted_champs = []
     for champ in champs:
