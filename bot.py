@@ -40,6 +40,17 @@ async def join_voice(ctx):
     else:
         await ctx.send("You are not connected to a voice channel.")
 
+tft_run_var=False
+@bot.command(name='tft_run')
+async def tft_run(ctx):
+    global tft_run_var
+    if tft_run_var:
+        tft_run_var=False
+        await ctx.send("Stop running TFT match detection")
+    else:
+        tft_run_var=True
+        await ctx.send("Start running TFT match detection")
+
 @bot.command(name='tft')
 async def tft_latest_match(ctx, riot_id: str, tag: str):
     try:
@@ -77,7 +88,8 @@ async def tft_latest_match(ctx, riot_id: str, tag: str):
     
 @tasks.loop(minutes=1)
 async def check_lasted_match():
-
+    if not tft_run_var:
+        return False
     riot_ids=RIOT_IDS
     # Send the banner image file to Discord
     channel = bot.get_channel(CHAT_ROOM_ID)  # Replace with your channel ID
