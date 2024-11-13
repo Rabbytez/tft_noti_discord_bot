@@ -20,7 +20,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 @bot.event
 async def on_ready():
     logger.info(f'Logged in as {bot.user}')
-
+    check_lasted_match.start()
 @bot.event
 async def on_disconnect():
     logger.warning("Bot disconnected. Attempting to reconnect...")
@@ -75,6 +75,56 @@ async def tft_latest_match(ctx, riot_id: str, tag: str):
         logger.error(f"Error fetching match data: {e}")
         await ctx.send("Failed to retrieve match data. Please try again later.")
     
+@tasks.loop(minutes=1)
+async def check_lasted_match():
+
+    riot_ids=RIOT_IDS
+    # Send the banner image file to Discord
+    channel = bot.get_channel(CHAT_ROOM_ID)  # Replace with your channel ID
+    if riot_ids == None:
+        return False
+    for i in riot_ids:
+        riot_id, tag = i.split('#')
+
+        try:
+            
+            # Fetch profile data
+            profile_data = get_profile_data(riot_id, tag)
+            if not profile_data:
+                await channel.send("Failed to retrieve profile data. Please try again later.")
+                return
+
+            match_id = get_match_latest_id(profile_data)
+            print(match_id)
+            if not match_id:
+                await channel.send("No recent matches found for this player.")
+                return
+
+            match_data = get_match_data(match_id, riot_id, tag)
+            if not match_data:
+                await channel.send("Failed to retrieve match data. Please try again later.")
+                return
+
+            image_name = create_match_summary(profile_data, match_data,shcedule_run=True)
+            
+            if image_name:
+                # send message with image
+                msg=f'Detect {i}'+'\'s latest match'
+                with open(image_name, 'rb') as file:
+                    await channel.send(file=discord.File(file, image_name),content=msg)
+            else:
+                continue
+
+            
+
+
+                
+        except KeyError as e:
+            logger.error(f"Missing key in match data: {e}")
+            await channel.send("Failed to retrieve match data. Some information is missing.")
+        except Exception as e:
+            logger.error(f"Error fetching match data: {e}")
+            await channel.send("Failed to retrieve match data. Please try again later.")
 def run_bot():
     reconnect_attempts = 0
     max_attempts = 5

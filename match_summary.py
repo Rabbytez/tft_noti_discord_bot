@@ -208,7 +208,7 @@ def format_match_details(profile_data, items_data ,match_data):
         "lp_diff": lp_diff
     }
 
-def create_match_summary(profile_data, match_data):
+def create_match_summary(profile_data, match_data,shcedule_run=False):
     # Ensure profile_data and match_data are valid before proceeding
     if not profile_data or not match_data:
         print("Error: One or more inputs to create_match_summary are None.")
@@ -230,19 +230,47 @@ def create_match_summary(profile_data, match_data):
     # Check match data structure
     latest_match_data = match_data.get("data", {}).get("tft", {}).get("matchV2")
 
+    latest_match_id = get_match_latest_id(profile_data)
+    
     if not isinstance(latest_match_data, dict):
         print("Error: latest_match_data is None or not a dictionary.")
         return None
-
-    # Proceed with accessing match data from `latest_match_data`
-    match_time = time_ago(latest_match_data.get("date", "Unknown"))
-    match_duration_seconds = latest_match_data.get("durationSeconds", 0)
-    match_duration = f"{match_duration_seconds // 60}m" if match_duration_seconds else "N/A"
     
     # Extract profile icon ID and construct URL
     puid = summoner_info.get("summonerInfo", {}).get("puuid", "")
     profile_icon_id = summoner_info.get("summonerInfo", {}).get("profileIcon", "")
     profile_icon_url = f"https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/{profile_icon_id}.png?1"
+    
+    if shcedule_run:
+
+        if not os.path.exists("last_match_id.json"):
+            with open("last_match_id.json", "w") as json_file:
+                json.dump({}, json_file)
+        
+        with open("last_match_id.json") as json_file:
+            last_match_id = json.load(json_file)
+            last_match_id_json=last_match_id
+
+        if puid not in last_match_id_json:
+            # print('puid not in last_match_id_json')
+            last_match_id_json.update({puid: latest_match_id})
+            with open("last_match_id.json", "w") as json_file:
+                json.dump(last_match_id_json, json_file)
+
+        else:
+            # print('puid in last_match_id_json')
+            if last_match_id_json[puid] == latest_match_id:
+                return False
+            else:
+                last_match_id_json[puid] = latest_match_id
+                with open("last_match_id.json", "w") as json_file:
+                    json.dump(last_match_id, json_file)
+    # Proceed with accessing match data from `latest_match_data`
+    match_time = time_ago(latest_match_data.get("date", "Unknown"))
+    match_duration_seconds = latest_match_data.get("durationSeconds", 0)
+    match_duration = f"{match_duration_seconds // 60}m" if match_duration_seconds else "N/A"
+    
+
 
     # Attempt to access progress tracking data
     profile_latest_match = summoner_info.get("summonerProgressTracking", {}).get("progress", {}).get("entries", [{}])[0]
