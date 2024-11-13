@@ -10,10 +10,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from main import get_profile_data, get_match_data
 from jinja2 import Template
 from datetime import datetime, timezone
+from augments import augment_data
 import pytz
 
 # Import the assets functions
-from assets import get_champion_assets, get_rank_assets
+from assets import get_champion_assets, get_rank_assets , get_trait_data
 
 # Load items data
 with open("tft_set12_items.json", "r", encoding="utf-8") as f:
@@ -22,6 +23,7 @@ with open("tft_set12_items.json", "r", encoding="utf-8") as f:
 # Retrieve rank data and champion assets from assets.py
 rank_data = get_rank_assets()
 champion_assets = get_champion_assets()
+trait_data = get_trait_data()
 
 def time_ago(match_time_str):
     bangkok_tz = pytz.timezone('Asia/Bangkok')
@@ -68,17 +70,52 @@ def get_lp_change_color(lp_change):
     """Return a CSS class based on LP change."""
     return "green" if lp_change > 0 else "red"
 
-def puid_validation(profile_data):
+def puid_validation_profile_data(profile_data):
     summoner_profile = profile_data.get("data", {}).get("tft", {}).get("profile", [])
     summoner_info = summoner_profile[0].get("profile", {})
-    puid = summoner_info.get("summonerInfo", {}).get("puuid", "")
-    return puid
+    puid_user = summoner_info.get("summonerInfo", {}).get("puuid", "")
+    return puid_user
+
+def puid_validation(puid_user,match_data):
+    puid_user = puid_validation_profile_data(profile_data)
+    print("PUID user " + puid_user)
+    match_data_profile = match_data.get("data", {}).get("tft", {}).get("matchV2", [])
+    get_all_match = match_data_profile.get("participants", {})
+
+    for match in get_all_match:
+        puid = match.get("puuid", "")
+        if puid == puid_user:
+            user_latest_match_data_details = match
+            print("PUID found")
+            return user_latest_match_data_details
+        
+def get_match_latest_id(profile_data):
+    try:
+        summoner_profile = profile_data.get("data", {}).get("tft", {}).get("profile", [])
+        if not summoner_profile:
+            return ""
+            
+        summoner_info = summoner_profile[0].get("profile", {})
+        entries = summoner_info.get("summonerProgressTracking", {}).get("progress", {}).get("entries", [])
+        
+        # Check if there are any entries
+        if entries and isinstance(entries, list) and len(entries) > 0:
+            return entries[0].get("id", "")
+            
+        return ""
+        
+    except (IndexError, KeyError, TypeError) as e:
+        print(f"Error getting match ID: {e}")
+        return ""
 
 # Function to format match details
-def format_match_details(latest_match, items_data):
+def format_match_details(latest_match, items_data, user_latest_match_data_details):
     # Start timing this function
     start_time = time.time()
 
+    # Get the latest match details
+    latest_match_details = user_latest_match_data_details
+    
     # Create item name to slug mapping
     item_name_to_slug = {
         item['flatData']['name']: item['flatData']['slug']
@@ -91,9 +128,16 @@ def format_match_details(latest_match, items_data):
     lp_info = latest_match.get("lp", {}).get("after", {})
     lp_diff = latest_match.get("lp", {}).get("lpDiff", 0)
 
+    # Function to get the color based on the number of units
+    def get_trait_color(trait_slug, num_units):
+        tiers = trait_data.get(trait_slug, {})
+        for units, color in sorted(tiers.items(), key=lambda x: int(x[0]), reverse=True):
+            if num_units >= int(units):
+                return color
+        return "default"
+
     # Formatting traits
     sorted_traits = sorted(traits, key=lambda x: x.get('numUnits', 0), reverse=True)
-    # url_img = f"https://raw.githubusercontent.com/Rabbytez/tft12_trait_rab/refs/heads/main/trait_img/"
     url_img = "https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/"
     formatted_traits = []
     for trait in sorted_traits:
@@ -101,12 +145,15 @@ def format_match_details(latest_match, items_data):
             trait_slug = trait.get('slug', '')
             trait_num_units = trait.get('numUnits', 0)
             trait_icon_url = f"{url_img}24-{trait_slug}.svg?v=61"
-
-            formatted_traits.append({
-                "name": trait_slug,
-                "num_units": trait_num_units,
-                "icon_url": trait_icon_url
-            })
+            trait_color = get_trait_color(trait_slug, trait_num_units)
+            
+            if trait_color != "default":
+                formatted_traits.append({
+                    "name": trait_slug.capitalize(),
+                    "num_units": trait_num_units,
+                    "icon_url": trait_icon_url,
+                    "color": trait_color
+                })
 
     formatted_champs = []
     for champ in champs:
@@ -135,13 +182,27 @@ def format_match_details(latest_match, items_data):
                 "name": item_name,
                 "url": item_image_url
             })
-            
+        
+        # Process augments
+        augments_info = latest_match_details.get("augments", [])
+        formatted_augments = []
+        for augment in augments_info:
+            augment_slug = augment.get("slug", "")
+            augment_name = augment_slug.replace("-", " ").replace("+", "").title()  # Capitalize each word
+            augment_image_url = augment_data(augment_name)
+            formatted_augments.append({
+                "name": augment_name,
+                "url": augment_image_url
+            })
+        
         # Get champion image URL from assets
         champion_info = champion_assets.get(champ_name, {})
         champion_image_url = champion_info.get("url", "")
+        champ_price = champion_info.get("price", 1)
         
         formatted_champs.append({
             "name": champ_name,
+            "champ_price": champ_price,
             "items": items_info,
             "tier": "★" * champ.get("tier", 1),
             "image_url": champion_image_url
@@ -154,26 +215,35 @@ def format_match_details(latest_match, items_data):
     return {
         "placement": placement,
         "traits": formatted_traits,
+        "augments": formatted_augments,
         "champs": formatted_champs,
         "lp_info": lp_info,
         "lp_diff": lp_diff
     }
 
 # Function to create match summary
-def create_match_summary(profile_data, match_data):
+def create_match_summary(profile_data, match_data, user_latest_match_data_details):
     # Start timing this function
     start_time = time.time()
 
-    # Extract necessary data
+    # Extract necessary profile data
     summoner_profile = profile_data.get("data", {}).get("tft", {}).get("profile", [])
     summoner_info = summoner_profile[0].get("profile", {})
     summoner_name = summoner_info.get("info", {}).get("gameName", "")
     summoner_tag = summoner_info.get("info", {}).get("tagLine", "")
     rating_info = summoner_info.get("rank", {})
     rating_text = f"{rating_info.get('tier', '')} {rating_info.get('division', '')}"
-    latest_match_data = match_data.get("data", {}).get("tft", {}).get("matchV2", [])
-    match_time = time_ago(latest_match_data.get("date", {}))
     
+    # Extract necessary match data
+    latest_match_data = match_data.get("data", {}).get("tft", {}).get("matchV2", [])
+    
+    # Get the latest match time data
+    match_time = time_ago(latest_match_data.get("date", {}))
+    match_duration_seconds = latest_match_data.get("durationSeconds", 0)
+    def format_duration(seconds):
+        minutes = seconds // 60
+        return f"{minutes}m"
+    match_duration = format_duration(match_duration_seconds)
     
     # Extract profile icon ID and construct URL
     puid = summoner_info.get("summonerInfo", {}).get("puuid", "")
@@ -189,11 +259,14 @@ def create_match_summary(profile_data, match_data):
     lp_value = latest_match.get("lp", {}).get("after", {}).get("value", 0)
     lp_color = get_lp_change_color(lp_diff)
     
+    # Get only the last two digits of lp_value
+    lp_value_last_two_digits = lp_value % 100
+    
     def add_plus_minus(lp_diff):
         if lp_color == "green":
             lp_diff = f"+{lp_diff}"
         else:
-            lp_diff = f"-{lp_diff}" 
+            lp_diff = f"{lp_diff}" 
         return lp_diff
     lp_diff = add_plus_minus(lp_diff)    
 
@@ -206,12 +279,13 @@ def create_match_summary(profile_data, match_data):
         game_mode = "..."
     
     # Format match details
-    match_details = format_match_details(latest_match, items_data)
+    match_details = format_match_details(latest_match, items_data,user_latest_match_data_details)
     
     ver_patch = latest_match.get("patch", "")
     
     placement = match_details["placement"]
     traits = match_details["traits"]
+    augments = match_details["augments"]
     champs = match_details["champs"]
 
     # HTML template
@@ -234,7 +308,7 @@ def create_match_summary(profile_data, match_data):
             
         .container {
             max-height: 325px;
-            max-width: 760px;
+            max-width: 720px;
             background-color: #1e1e1e;
             color: #ffffff;
             font-family: "Noto Sans", serif;
@@ -293,10 +367,15 @@ def create_match_summary(profile_data, match_data):
             margin: 5px;
             text-align: center;
         }
-        .champion img {
+        .champion-icon{
             width: 55px;
             height: 55px;
             border-radius: 10px;
+        }
+        .champion-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
         }
         .champion .stars {
             font-size: 1.0em;
@@ -311,10 +390,12 @@ def create_match_summary(profile_data, match_data):
             margin-top: 5px;
             display: flex;
             justify-content: center;
+            
         }
         .items img {
             width: 16px;
             height: 16px;
+            border: 0.5px solid #1a1a1a;
             margin: 0 1px;
         }
         .rank-icon {
@@ -329,7 +410,6 @@ def create_match_summary(profile_data, match_data):
         .stat-bar {
             display: flex;
             flex-direction: row;
-            justify-content: start;
             margin-bottom: 20px;
             max-height: 120px;
         }
@@ -340,37 +420,8 @@ def create_match_summary(profile_data, match_data):
             justify-content: flex-end;
             margin-left: 25px;
             margin-right: 15px;
+            align-items: flex-end;
 
-        }
-        .traits-list {
-            display: flex;
-            max-width: 400px;
-            padding: 15px;
-            flex-wrap: wrap;
-            margin-left: 25px;
-            padding-bottom: 6px;
-            background-color: #2e2e2e;
-            border-radius: 10px;
-            align-items: center;
-        }
-
-        .trait {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-
-        .trait img {
-            width: 18px;  /* Adjust size as needed */
-            height: 18px;
-            margin-bottom: 5px;
-        }
-        
-        .trait-text {
-            font-size: 0.6em;  /* Smaller text size */
-            text-align: center;
         }
         .placement-container {
             display: flex;
@@ -385,7 +436,7 @@ def create_match_summary(profile_data, match_data):
         .game-mode {
             display: contents;
             align-items: start;
-            font-size: 1.5em;
+            font-size: 1.6em;
             font-weight: bold;
         }
         .time-patch {
@@ -400,14 +451,50 @@ def create_match_summary(profile_data, match_data):
             background-color: #2e2e2e;
             border-radius: 10px;
         }
+        .augments-container {
+            display: flex;
+            align-items: stretch;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+            margin-left: 25px;
+        }
+
+        .augment-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            background-color: #9d3f3f;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 10px 10px 0;
+        }
         .augments-detail {
             display: flex;
             flex-direction: column;
             align-items: start;
-            justify-content: start;
-            max-width": 75px;
+            justify-content: center;
+            max-width: 150px;
+            padding: 15px 15px 15px 8px;
             background-color: #2e2e2e;
             border-radius: 10px;
+        }
+        .augment {
+            display: flex;
+            align-items: center;
+        }
+        .augment img {
+            width: 35px;
+            height: 35px;
+            margin: 0 2px;
+        }
+        .augment-text {
+            font-size: 0.6em;
+            text-align: start;
+            margin-right: 5px;
         }
         .glow-container {
             position: absolute;
@@ -415,6 +502,84 @@ def create_match_summary(profile_data, match_data):
             box-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6);
             border-radius: 10px; 
             padding: 5px; 
+        }        
+        .traits-container {
+            display: flex;
+            flex: 1;
+            align-items: stretch;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+            margin-left: 25px;
+        }
+        .traits-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            background-color: #873ea7;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 10px 10px 0;
+        }
+        .traits-list {
+            display: flex;
+            flex: 1;
+            max-width: 400px;
+            padding: 10px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            flex-direction: column;
+            align-content: flex-start;
+        }
+        .trait {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .trait img {
+            width: 18px;  /* Adjust size as needed */
+            height: 18px;
+            margin-right: 5px;
+        }
+        .trait-text {
+            font-size: 0.6em;  /* Smaller text size */
+            text-align: center;
+        }
+        .trait-num-units {
+            font-size: 0.6em;  /* Smaller text size */
+            margin-left: 4px;
+            margin-right: 4px;
+        }
+        .player-tag {
+            font-size: 0.75em;
+            color: #838383;
+        }
+        .silver { background-color: #6b6b6b; }
+        .gold { background-color: #dbaf0d; }
+        .prismatic { background-color: #8432ab; }
+        .copper { background-color: #b87333; }
+        .default { background-color: black; color: white; }
+        .price-1 {
+            border: 3.5px solid silver;
+        }
+        .price-2 {
+            border: 3.5px solid green;
+        }
+        .price-3 {
+            border: 3.5px solid blue;
+        }
+        .price-4 {
+            border: 3.5px solid purple;
+        }
+        .price-5 {
+            border: 3.5px solid #dbaf0d;
         }
     </style>
 </head>
@@ -427,25 +592,39 @@ def create_match_summary(profile_data, match_data):
                 <div class="lp-change"><span class="{{ lp_color }}">{{ lp_diff }} LP</span></div>
             </div>
             <div class="stat-container">
-                <div class="time-patch">{{ match_time }} Patch-{{ ver_patch }}</div>
+                <div class="time-patch">{{ ver_patch }} ∙ {{ match_time }} ∙ {{ match_duration }}</div>
                 <div class="game-mode">{{ game_mode }}</div>
-                <div class="player-info">{{ summoner_name }}#{{ summoner_tag }}</div>
                 <div class="rank-icon">
                     <img src="{{ rank_icon }}" alt="Rank Icon">
                     {{ rank_tier }} {{ lp_value }} LP
                 </div>
+                <div class="player-tag">{{ summoner_name }}<span>#{{ summoner_tag }}</span></div>
             </div>
         </div>
-        <div class="augments-detail">
-            <!-- Augments details can be added here -->
-        </div>
-        <div class="traits-list">
-            {% for trait in traits %}
-            <div class="trait">
-                <img src="{{ trait.icon_url }}" alt="{{ trait.name }}">
-                <div class="trait-text">{{ trait.name }} {{ trait.num_units }}</div>
+        <div class="augments-container">
+            <div class="augment-label">Augments</div>
+            <div class="augments-detail">
+                {% for augment in augments %}
+                <div class="augment">
+                    <img src="{{ augment.url }}" alt="{{ augment.name }}">
+                    <div class="augment-text">{{ augment.name }}</div>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+        </div>
+        <div class="traits-container">
+            <div class="traits-label">Traits</div>
+            <div class="traits-list">
+                {% for trait in traits %}
+                    {% if trait.color %}  {# Only show traits with active style/color #}
+                    <div class="trait {{ trait.color }}">
+                        <img src="{{ trait.icon_url }}" alt="{{ trait.name }}">
+                        <div class="trait-text">{{ trait.name }}</div>
+                        <div class="trait-num-units">{{ trait.num_units }}</div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
     <div class="match-summary">
@@ -455,10 +634,10 @@ def create_match_summary(profile_data, match_data):
         <div class="champion-list">
             {% for champ in champs %}
             <div class="champion">
-                <img src="{{ champ.image_url }}" alt="{{ champ.name }}">
-                    <div class="glow-container">
-                        <div class="stars">{{ champ.tier }}</div>
-                    </div>
+                <div class="champion-icon price-{{ champ.champ_price }}">
+                    <img src="{{ champ.image_url }}" alt="{{ champ.name }}">
+                </div>
+                <div class="stars">{{ champ.tier }}</div>
                 <div class="items">
                     {% for item in champ['items'] %}
                     <img src="{{ item.url }}" alt="{{ item.name }}">
@@ -477,19 +656,21 @@ def create_match_summary(profile_data, match_data):
     rendered_html = template.render(
         champs=champs,
         traits=traits,
+        augments=augments,
         placement=placement,
         lp_diff=lp_diff,
         lp_color=lp_color,
         rank_icon=rank_icon,
         rank_color=rank_color,
         rank_tier=rank_tier,
-        lp_value=lp_value,
+        lp_value=lp_value_last_two_digits,
         summoner_name=summoner_name,
         summoner_tag=summoner_tag,
         rating_text=rating_text,
         profile_icon_url=profile_icon_url,
         game_mode=game_mode,
         match_time=match_time,
+        match_duration=match_duration,
         ver_patch=ver_patch
     )
 
@@ -533,15 +714,12 @@ def create_match_summary(profile_data, match_data):
 if __name__ == '__main__':
     total_start_time = time.time()  # Start total execution timing
 
-    match_id = "42590337"
     riotname = "beggy"
     tag = "3105"
 
     try:
         data_fetch_start_time = time.time()  # Start data fetching timing
-
         profile_data = get_profile_data(riotname, tag)
-        match_data = get_match_data(match_id, riotname, tag)
 
         data_fetch_end_time = time.time()  # End data fetching timing
         print(f"Data fetching took {data_fetch_end_time - data_fetch_start_time:.4f} seconds")
@@ -549,9 +727,13 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Error fetching data: {e}")
         sys.exit(1)
+        
+    match_id = get_match_latest_id(profile_data)
+    match_data = get_match_data(match_id, riotname, tag)
+    puid_user = puid_validation_profile_data(profile_data)
+    user_latest_match_data_details = puid_validation(puid_user,match_data)
 
-    create_match_summary(profile_data, match_data)
-    puid = puid_validation(profile_data)
+    create_match_summary(profile_data, match_data, user_latest_match_data_details)
 
     total_end_time = time.time()  # End total execution timing
     print(f"Total script execution time: {total_end_time - total_start_time:.4f} seconds")

@@ -1,0 +1,63 @@
+{'puuid': 'SyV_5DfNYoD2ny0_Wn2-G-Hs5IcfHwmMl1dumc3tqk8LC_jnA9Nz5AAxf1uX5m-G61zwWjabHT0xcw', 'region': 'TH', 'set': '12', 'profile': {'puuid': 'SyV_5DfNYoD2ny0_Wn2-G-Hs5IcfHwmMl1dumc3tqk8LC_jnA9Nz5AAxf1uX5m-G61zwWjabHT0xcw', 'rank': {'tier': 'PLATINUM', 'division': 'I', '__typename': 'SummonerRank'
+        }, 'summonerInfo': {'puuid': 'SyV_5DfNYoD2ny0_Wn2-G-Hs5IcfHwmMl1dumc3tqk8LC_jnA9Nz5AAxf1uX5m-G61zwWjabHT0xcw', 'accountId': 'SyV_5DfNYoD2ny0_Wn2-G-Hs5IcfHwmMl1dumc3tqk8LC_jnA9Nz5AAxf1uX5m-G61zwWjabHT0xcw', 'summonerId': '0dRFrWHnkWWpv1B5o8DfpPbHK5zhkZ4e1wYnJ80Q3-3qzscdeIDdttV0Bg', 'gameName': 'CKKUBx', 'tagLine': '9240', 'region': 'TH', 'profileIcon': 29, 'level': 1, '__typename': 'TftSummoner'
+        }, '__typename': 'TftProfile'
+    }, 'placement': 1, 'damageDealt': 198, 'timeEliminatedSeconds': 2121, 'archetypeId': 0, 'traits': [
+        {'slug': 'arcana', 'numUnits': 1, 'style': 0, 'tierCurrent': 0, 'tierTotal': 4, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'ascendant', 'numUnits': 1, 'style': 3, 'tierCurrent': 1, 'tierTotal': 1, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'blaster', 'numUnits': 1, 'style': 0, 'tierCurrent': 0, 'tierTotal': 3, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'dragon', 'numUnits': 3, 'style': 4, 'tierCurrent': 2, 'tierTotal': 2, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'eldritch', 'numUnits': 2, 'style': 0, 'tierCurrent': 0, 'tierTotal': 4, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'frost', 'numUnits': 1, 'style': 0, 'tierCurrent': 0, 'tierTotal': 4, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'hunter', 'numUnits': 1, 'style': 0, 'tierCurrent': 0, 'tierTotal': 3, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'pyro', 'numUnits': 1, 'style': 0, 'tierCurrent': 0, 'tierTotal': 4, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'ravenous', 'numUnits': 1, 'style': 3, 'tierCurrent': 1, 'tierTotal': 1, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'shapeshifter', 'numUnits': 6, 'style': 4, 'tierCurrent': 3, 'tierTotal': 5, '__typename': 'TftMatchRegistryTrait'
+        },
+        {'slug': 'witchcraft', 'numUnits': 1, 'style': 0, 'tierCurrent': 0, 'tierTotal': 4, '__typename': 'TftMatchRegistryTrait'
+        }
+    ], 'units': [
+        {'slug': 'nomsy', 'tier': 2, 'items': None, 'chosen': None, '__typename': 'TftMatchRegistryUnit'
+        },
+        {'slug': 'elise', 'tier': 2, 'items': None, 'chosen': None, '__typename': 'TftMatchRegistryUnit'
+        },
+        {'slug': 'shyvana', 'tier': 2, 'items': None, 'chosen': None, '__typename': 'TftMatchRegistryUnit'
+        },
+        {'slug': 'swain', 'tier': 2, 'items': ['locket-of-the-iron-solari'
+            ], 'chosen': None, '__typename': 'TftMatchRegistryUnit'
+        },
+        {'slug': 'neeko', 'tier': 2, 'items': ['locket-of-the-iron-solari'
+            ], 'chosen': None, '__typename': 'TftMatchRegistryUnit'
+        },
+        {'slug': 'nasus', 'tier': 2, 'items': ['redemption', 'gargoyle-stoneplate', 'bramble-vest'
+            ], 'chosen': None, '__typename': 'TftMatchRegistryUnit'
+        },
+        {'slug': 'smolder', 'tier': 2, 'items': ['last-whisper', 'guinsoos-rageblade', 'infinity-edge'
+            ], 'chosen': None, '__typename': 'TftMatchRegistryUnit'
+        },
+        {'slug': 'briar', 'tier': 2, 'items': [
+                "sterak's-gage",
+                "prowler's-claw1"
+            ], 'chosen': None, '__typename': 'TftMatchRegistryUnit'
+        },
+        {'slug': 'xerath', 'tier': 2, 'items': [
+                "nashor's-tooth", 'adaptive-helm', 'giant-slayer'
+            ], 'chosen': None, '__typename': 'TftMatchRegistryUnit'
+        }
+    ], 'augments': [
+        {'slug': 'golden-ticket', '__typename': 'TftMatchRegistryAugment'
+        },
+        {'slug': 'final-resistance', '__typename': 'TftMatchRegistryAugment'
+        },
+        {'slug': 'reinfourcement', '__typename': 'TftMatchRegistryAugment'
+        }
+    ], '__typename': 'TftMatchParticipant'
+}

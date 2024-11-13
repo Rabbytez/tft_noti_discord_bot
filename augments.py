@@ -7,7 +7,7 @@ def augment_data(augment_name):
     
     for i in augments['augments']:
         # print(i['apiName'])
-        if i['apiName'] == augment_name:
+        if i['name'] == augment_name:
             # "icon": "ASSETS/Maps/TFT/Icons/Augments/Hexcore/All-that-Shimmers-II.tex",
             # augement = all-that-shimmers-ii
             augement_path=i['icon'].split('/')[-1].split('.')[0]

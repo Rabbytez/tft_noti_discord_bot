@@ -291,3 +291,145 @@ def get_rank_assets():
 }
         
     return rank_data
+
+def get_trait_data():
+        
+    trait_data = {
+        "frost": {
+            "3": "silver",
+            "6": "gold",
+            "9": "prismatic",
+        },
+        "arcana": {
+            "2": "silver",
+            "3": "gold",
+            "4": "gold",
+            "5": "gold",
+        },
+        "chrono": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+        },
+        "dragon": {
+            "2": "silver",
+            "3": "gold",
+        },
+        "druid": {
+            "1": "silver",
+        },
+        "eldritch": {
+            "3": "silver",
+            "5": "silver",
+            "7": "gold",
+            "10": "prismatic",
+        },
+        "faerie": {
+            "3": "silver",
+            "5": "silver",
+            "7": "gold",
+            "9": "gold",
+        },
+        "honeymancy": {
+            "3": "silver",
+            "5": "gold",
+            "7": "gold",
+        },
+        "portal": {
+            "3": "silver",
+            "6": "gold",
+            "8": "gold",
+            "10": "prismatic",
+        },
+        "pyro": {
+            "2": "silver",
+            "3": "silver",
+            "4": "gold",
+            "5": "gold",
+        },
+        "sugarcraft": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+            "8": "gold",
+        },
+        "witchcraft": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+            "8": "gold",
+        },
+        "explorer": {
+            "1": "copper",
+        },
+        "ascendant": {
+            "1": "copper",
+        },
+        "bastion": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+            "8": "gold",
+        },
+        "batqueen": {
+            "1": "copper",
+        },
+        "bestfriends": {
+            "1": "copper",
+        },
+        "blaster": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+        },
+        "hunter": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+        },
+        "incantor": {
+            "2": "silver",
+            "4": "gold",
+        },
+        "mage": {
+            "3": "silver",
+            "5": "gold",
+            "7": "gold",
+            "10": "prismatic",
+        },
+        "multistriker": {
+            "3": "silver",
+            "5": "gold",
+            "7": "gold",
+            "9": "gold",  
+        },
+        "preserver": {
+            "2": "silver",
+            "3": "gold",
+            "4": "gold",
+            "5": "gold",
+        },
+        "scholar": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+        },
+        "shapeshifter": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+            "8": "gold",
+        },
+        "vanguard": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+        },
+        "warrior": {
+            "2": "silver",
+            "4": "gold",
+            "6": "gold",
+        },
+    }
+
+    return trait_data
