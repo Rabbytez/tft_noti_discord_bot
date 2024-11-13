@@ -3,7 +3,7 @@ import json
 
 def get_profile_data(riotname, tag):
     
-    file_name = f"v2-profile-data-{riotname}-{tag}.json"
+    file_name = f"output/v2-profile-data-{riotname}-{tag}.json"
     url = "https://mobalytics.gg/api/tft/v1/graphql/query"
 
     headers = {
@@ -62,7 +62,7 @@ def get_profile_data(riotname, tag):
 
     if response.status_code == 200:
         data = response.json()
-        print("200 Request successful!")
+        print("200 profile Request successful!")
         with open(file_name, "w") as f:
             json.dump(data, f)
     else:
@@ -72,7 +72,7 @@ def get_profile_data(riotname, tag):
 
 def get_match_data(match_id,riotname,tag,region="TH"):
     
-    file_name = f"v2-match-data-{match_id}-{region}-{riotname}-{tag}.json"
+    file_name = f"output/v2-match-data-{match_id}-{region}-{riotname}-{tag}.json"
     url = "https://mobalytics.gg/api/tft/v1/graphql/query"
 
     headers = {
@@ -104,7 +104,7 @@ def get_match_data(match_id,riotname,tag,region="TH"):
         match_data = response.json()
         with open(file_name, "w") as f:
             json.dump(match_data, f)
-        print("200 Request successful!")
+        print("200 match Request successful!")
 
     else:
         print(f"Request failed with status code: {response.status_code}")

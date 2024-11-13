@@ -162,6 +162,7 @@ cython_debug/
 
 #etc
 last_match_id.json
+
 *.png
 *.jpg
 *.jpeg

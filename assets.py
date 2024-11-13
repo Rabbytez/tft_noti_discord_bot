@@ -193,6 +193,10 @@ def get_champion_assets():
                 "url": "https://rerollcdn.com/characters/Skin/12/TahmKench.png",
                 "price": 4,
             },
+            "Tahmkench": {
+                "url": "https://rerollcdn.com/characters/Skin/12/TahmKench.png",
+                "price": 4,
+            },
             "Taric": {
                 "url": "https://rerollcdn.com/characters/Skin/12/Taric.png",
                 "price": 4,

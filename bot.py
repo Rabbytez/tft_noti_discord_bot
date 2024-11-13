@@ -3,8 +3,8 @@ import logging
 import time
 from discord.ext import commands, tasks
 from config import TOKEN, CHAT_ROOM_ID, RIOT_IDS
-from main import get_profile_data
-from match_summary import create_match_summary
+from main import get_profile_data, get_match_data
+from match_summary import create_match_summary, get_match_latest_id
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -20,7 +20,6 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 @bot.event
 async def on_ready():
     logger.info(f'Logged in as {bot.user}')
-    check_latest_match.start()
 
 @bot.event
 async def on_disconnect():
@@ -42,26 +41,27 @@ async def join_voice(ctx):
         await ctx.send("You are not connected to a voice channel.")
 
 @bot.command(name='tft')
-async def latest_match(ctx, riot_id: str, tag: str):
+async def tft_latest_match(ctx, riot_id: str, tag: str):
     try:
-        # Fetch profile data
         profile_data = get_profile_data(riot_id, tag)
+        if not profile_data:
+            await ctx.send("Failed to retrieve profile data. Please try again later.")
+            return
 
-        # Check for the presence of 'summoner' and 'matches' keys
-        if 'summoner' not in profile_data:
-            await ctx.send("No summoner data found for this player. Please check the Riot ID and tag.")
-            logger.error("Missing 'summoner' key in profile data.")
+        match_id = get_match_latest_id(profile_data)
+        print(match_id)
+        if not match_id:
+            await ctx.send("No recent matches found for this player.")
             return
-        
-        if 'matches' not in profile_data or not profile_data['matches']:
-            await ctx.send("No match data available for this player.")
-            logger.error("Missing 'matches' key or no matches in profile data.")
+
+        match_data = get_match_data(match_id, riot_id, tag)
+        if not match_data:
+            await ctx.send("Failed to retrieve match data. Please try again later.")
             return
+
+        image_name = create_match_summary(profile_data, match_data)
+
         
-        # Generate the match summary banner using HTML and capture it as an image
-        image_name = create_match_summary(profile_data)
-        
-        # Send the banner image file to Discord
         if image_name:
             with open(image_name, 'rb') as file:
                 await ctx.send(file=discord.File(file, image_name))
@@ -74,38 +74,7 @@ async def latest_match(ctx, riot_id: str, tag: str):
     except Exception as e:
         logger.error(f"Error fetching match data: {e}")
         await ctx.send("Failed to retrieve match data. Please try again later.")
-
-@tasks.loop(minutes=1)
-async def check_latest_match():
-    if not RIOT_IDS:
-        return
-
-    for i in RIOT_IDS:
-        riot_id, tag = i.split('#')
-
-        try:
-            # Fetch profile data
-            profile_data = get_profile_data(riot_id, tag)
-
-            # Generate the match summary banner using HTML and capture it as an image
-            image_name = create_match_summary(profile_data, is_auto=True)
-            
-            if image_name:
-                # Send the banner image file to Discord
-                channel = bot.get_channel(CHAT_ROOM_ID)
-                msg = f"Detected {i}'s latest match"
-                with open(image_name, 'rb') as file:
-                    await channel.send(file=discord.File(file, image_name), content=msg)
-
-        except KeyError as e:
-            logger.error(f"Missing key in match data: {e}")
-            channel = bot.get_channel(CHAT_ROOM_ID)
-            await channel.send("Failed to retrieve match data. Some information is missing.")
-        except Exception as e:
-            logger.error(f"Error fetching match data: {e}")
-            channel = bot.get_channel(CHAT_ROOM_ID)
-            await channel.send("Failed to retrieve match data. Please try again later.")
-
+    
 def run_bot():
     reconnect_attempts = 0
     max_attempts = 5
