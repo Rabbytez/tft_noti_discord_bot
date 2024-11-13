@@ -1,9 +1,10 @@
 import requests
 import json
 
+folder = "output"
 def get_profile_data(riotname, tag):
     
-    file_name = f"output/v2-profile-data-{riotname}-{tag}.json"
+    file_name = f"v2-profile-data-{riotname}-{tag}.json"
     url = "https://mobalytics.gg/api/tft/v1/graphql/query"
 
     headers = {
@@ -72,7 +73,8 @@ def get_profile_data(riotname, tag):
 
 def get_match_data(match_id,riotname,tag,region="TH"):
     
-    file_name = f"output/v2-match-data-{match_id}-{region}-{riotname}-{tag}.json"
+    file_name = f"v2-match-data-{match_id}-{region}-{riotname}-{tag}.json"
+    
     url = "https://mobalytics.gg/api/tft/v1/graphql/query"
 
     headers = {
