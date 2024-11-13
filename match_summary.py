@@ -134,7 +134,7 @@ def format_match_details(latest_match, items_data, user_latest_match_data_detail
         for units, color in sorted(tiers.items(), key=lambda x: int(x[0]), reverse=True):
             if num_units >= int(units):
                 return color
-        return "default"
+        return color
 
     # Formatting traits
     sorted_traits = sorted(traits, key=lambda x: x.get('numUnits', 0), reverse=True)
@@ -308,7 +308,7 @@ def create_match_summary(profile_data, match_data, user_latest_match_data_detail
             
         .container {
             max-height: 325px;
-            max-width: 720px;
+            max-width: 845px;
             background-color: #1e1e1e;
             color: #ffffff;
             font-family: "Noto Sans", serif;
@@ -361,6 +361,7 @@ def create_match_summary(profile_data, match_data, user_latest_match_data_detail
         .champion-list {
             display: flex;
             flex-wrap: wrap;
+            flex: 1;
         }
         .champion {
             position: relative;
@@ -432,6 +433,8 @@ def create_match_summary(profile_data, match_data, user_latest_match_data_detail
         .placement-number {
             font-size: 3.2em;
             font-weight: bold;
+            background: none;
+            color: inherit;
         }
         .game-mode {
             display: contents;
@@ -503,36 +506,14 @@ def create_match_summary(profile_data, match_data, user_latest_match_data_detail
             border-radius: 10px; 
             padding: 5px; 
         }        
-        .traits-container {
-            display: flex;
-            flex: 1;
-            align-items: stretch;
-            background-color: #2e2e2e;
-            border-radius: 10px;
-            margin-left: 25px;
-        }
-        .traits-label {
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            transform: rotate(180deg);
-            background-color: #873ea7;
-            color: #ffffff;
-            padding: 10px;
-            font-size: 0.8em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0 10px 10px 0;
-        }
         .traits-list {
             display: flex;
             flex: 1;
             max-width: 400px;
-            padding: 10px;
+            padding: 5px 10px 10px 25px;
             align-items: flex-start;
             flex-wrap: wrap;
             justify-content: flex-start;
-            flex-direction: column;
             align-content: flex-start;
         }
         .trait {
@@ -581,6 +562,42 @@ def create_match_summary(profile_data, match_data, user_latest_match_data_detail
         .price-5 {
             border: 3.5px solid #dbaf0d;
         }
+        .placement-1 {
+        color: #ebe729;
+        text-shadow: 0 0 40px rgb(247 217 59 / 91%), 0 0 55px rgb(255 239 92), 0 0 55px rgb(255 233 31);
+        }
+        
+        /* Placement color and gradient for ranks 2-4 */
+        .placement-2 {
+            color: #ffe940;
+            text-shadow: 0 0 30px rgb(219 179 24 / 76%), 0 0 35px rgb(201 158 16 / 80%);
+        }
+        .placement-3 {
+            color: #ff9c1c;
+            text-shadow: 0 0 30px rgb(195 109 0 / 76%), 0 0 35px rgb(201 158 16 / 80%);
+        }
+        .placement-4 {
+            color: #ff7007;
+            text-shadow: 0 0 30px rgb(195 109 0 / 76%), 0 0 35px rgb(201 158 16 / 80%);
+        }
+        
+        /* Placement color and gradient for ranks 5-8 */
+        .placement-5 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(211 0 0 / 60%), 0 0 35px rgb(217 131 131 / 80%);
+        }
+        .placement-6 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(211 0 0 / 70%), 0 0 35px rgb(217 131 131 / 80%);
+        }
+        .placement-7 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(211 0 0 / 80%), 0 0 35px rgb(217 131 131 / 80%);
+        }
+        .placement-8 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(247 19 19 / 80%), 0 0 45px rgb(247 19 19 / 80%), 0 0 45px rgb(247 19 19 / 80%);
+        }
     </style>
 </head>
 <body>
@@ -588,7 +605,7 @@ def create_match_summary(profile_data, match_data, user_latest_match_data_detail
     <div class="stat-bar">
         <div class="first-container">
             <div class="placement-container">
-                <div class="placement-number">{{ placement }}</div>
+                <div class="placement-number placement-{{ placement }}">{{ placement }}</div>
                 <div class="lp-change"><span class="{{ lp_color }}">{{ lp_diff }} LP</span></div>
             </div>
             <div class="stat-container">
@@ -612,8 +629,6 @@ def create_match_summary(profile_data, match_data, user_latest_match_data_detail
                 {% endfor %}
             </div>
         </div>
-        <div class="traits-container">
-            <div class="traits-label">Traits</div>
             <div class="traits-list">
                 {% for trait in traits %}
                     {% if trait.color %}  {# Only show traits with active style/color #}
@@ -625,7 +640,6 @@ def create_match_summary(profile_data, match_data, user_latest_match_data_detail
                     {% endif %}
                 {% endfor %}
             </div>
-        </div>
     </div>
     <div class="match-summary">
         <div class="profile-info">

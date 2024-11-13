@@ -17,7 +17,7 @@
             
         .container {
             max-height: 325px;
-            max-width: 720px;
+            max-width: 845px;
             background-color: #1e1e1e;
             color: #ffffff;
             font-family: "Noto Sans", serif;
@@ -70,6 +70,7 @@
         .champion-list {
             display: flex;
             flex-wrap: wrap;
+            flex: 1;
         }
         .champion {
             position: relative;
@@ -141,6 +142,8 @@
         .placement-number {
             font-size: 3.2em;
             font-weight: bold;
+            background: none;
+            color: inherit;
         }
         .game-mode {
             display: contents;
@@ -212,36 +215,14 @@
             border-radius: 10px; 
             padding: 5px; 
         }        
-        .traits-container {
-            display: flex;
-            flex: 1;
-            align-items: stretch;
-            background-color: #2e2e2e;
-            border-radius: 10px;
-            margin-left: 25px;
-        }
-        .traits-label {
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            transform: rotate(180deg);
-            background-color: #873ea7;
-            color: #ffffff;
-            padding: 10px;
-            font-size: 0.8em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0 10px 10px 0;
-        }
         .traits-list {
             display: flex;
             flex: 1;
             max-width: 400px;
-            padding: 10px;
+            padding: 5px 10px 10px 25px;
             align-items: flex-start;
             flex-wrap: wrap;
             justify-content: flex-start;
-            flex-direction: column;
             align-content: flex-start;
         }
         .trait {
@@ -290,6 +271,42 @@
         .price-5 {
             border: 3.5px solid #dbaf0d;
         }
+        .placement-1 {
+        color: #ebe729;
+        text-shadow: 0 0 40px rgb(247 217 59 / 91%), 0 0 55px rgb(255 239 92), 0 0 55px rgb(255 233 31);
+        }
+        
+        /* Placement color and gradient for ranks 2-4 */
+        .placement-2 {
+            color: #ffe940;
+            text-shadow: 0 0 30px rgb(219 179 24 / 76%), 0 0 35px rgb(201 158 16 / 80%);
+        }
+        .placement-3 {
+            color: #ff9c1c;
+            text-shadow: 0 0 30px rgb(195 109 0 / 76%), 0 0 35px rgb(201 158 16 / 80%);
+        }
+        .placement-4 {
+            color: #ff7007;
+            text-shadow: 0 0 30px rgb(195 109 0 / 76%), 0 0 35px rgb(201 158 16 / 80%);
+        }
+        
+        /* Placement color and gradient for ranks 5-8 */
+        .placement-5 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(211 0 0 / 60%), 0 0 35px rgb(217 131 131 / 80%);
+        }
+        .placement-6 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(211 0 0 / 70%), 0 0 35px rgb(217 131 131 / 80%);
+        }
+        .placement-7 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(211 0 0 / 80%), 0 0 35px rgb(217 131 131 / 80%);
+        }
+        .placement-8 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(247 19 19 / 80%), 0 0 45px rgb(247 19 19 / 80%), 0 0 45px rgb(247 19 19 / 80%);
+        }
     </style>
 </head>
 <body>
@@ -297,11 +314,11 @@
     <div class="stat-bar">
         <div class="first-container">
             <div class="placement-container">
-                <div class="placement-number">5</div>
+                <div class="placement-number placement-5">5</div>
                 <div class="lp-change"><span class="red">-10 LP</span></div>
             </div>
             <div class="stat-container">
-                <div class="time-patch">14.22 ∙ 3 hours ago ∙ 35m</div>
+                <div class="time-patch">14.22 ∙ 4 hours ago ∙ 35m</div>
                 <div class="game-mode">Ranked</div>
                 <div class="rank-icon">
                     <img src="https://cdn.metatft.com/file/metatft/ranks/emerald.png" alt="Rank Icon">
@@ -331,8 +348,6 @@
                 
             </div>
         </div>
-        <div class="traits-container">
-            <div class="traits-label">Traits</div>
             <div class="traits-list">
                 
                       
@@ -408,7 +423,6 @@
                     
                 
             </div>
-        </div>
     </div>
     <div class="match-summary">
         <div class="profile-info">
