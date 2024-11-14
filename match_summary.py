@@ -178,7 +178,7 @@ def format_match_details(profile_data, items_data ,match_data):
         for augment in augments_info:
             augment_slug = augment.get("slug", "")
             augment_name = augment_slug.replace("-", " ").replace("+", "").title()
-            augment_image_url = augment_data(augment_name)
+            augment_image_url = augment_data(augment_slug)
             formatted_augments.append({
                 "name": augment_name,
                 "url": augment_image_url

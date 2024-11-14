@@ -1,19 +1,21 @@
 import json
 
-with open('TFTSet12_latest_en_us.json',encoding='utf-8') as f:
-    augments = json.load(f)
+with open('moba_static_data.json',encoding='utf-8') as f:
+    data = json.load(f)
 
 def augment_data(augment_name):
     
-    for i in augments['augments']:
+    for i in data['data']['hextechAugments1']:
         # print(i['apiName'])
-        if i['name'] == augment_name:
-            # "icon": "ASSETS/Maps/TFT/Icons/Augments/Hexcore/All-that-Shimmers-II.tex",
-            # augement = all-that-shimmers-ii
-            augement_path=i['icon'].split('/')[-1].split('.')[0]
-            augement_path=augement_path.lower()
-            # https://cdn.metatft.com/cdn-cgi/image/width=46,height=46,format=auto/https://cdn.metatft.com/file/metatft/augments/little-buddies-ii.png
-            url=f"https://cdn.metatft.com/cdn-cgi/image/width=46,height=46,format=auto/https://cdn.metatft.com/file/metatft/augments/{augement_path}.png"
+        if i['flatData']['slug'] == augment_name:
+            augment_image_name=i['flatData']['imageSlug']
+            url=f'https://cdn.mobalytics.gg/assets/tft/images/hextech-augments/set12/{augment_image_name}.webp?v=61'
+            return url
+    for i in data['data']['hextechAugments2']:
+        # print(i['apiName'])
+        if i['flatData']['slug'] == augment_name:
+            augment_image_name=i['flatData']['imageSlug']
+            url=f'https://cdn.mobalytics.gg/assets/tft/images/hextech-augments/set12/{augment_image_name}.webp?v=61'
             return url
     return False
 # print()

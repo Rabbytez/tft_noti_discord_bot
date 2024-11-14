@@ -76,6 +76,10 @@ def get_champion_assets():
                 "url": "https://rerollcdn.com/characters/Skin/12/KogMaw.png",
                 "price": 2,
             },
+            "Kogmaw": {
+                "url": "https://rerollcdn.com/characters/Skin/12/KogMaw.png",
+                "price": 2,
+            },
             "Nilah": {
                 "url": "https://rerollcdn.com/characters/Skin/12/Nilah.png",
                 "price": 2,
