@@ -84,7 +84,6 @@ def latest_match_player(match_data, profile_data):
     for match in participants:
         puid = match.get("puuid", "")
         if puid == puid_user:
-            print("PUID found")
             return match
 
     print("Warning: No matching PUID found.")
@@ -122,9 +121,23 @@ def format_match_details(profile_data, items_data ,match_data):
     traits = profile_latest_match.get("traits", [])
     lp_info = profile_latest_match.get("lp", {}).get("after", {})
     lp_diff = profile_latest_match.get("lp", {}).get("lpDiff", 0)
-
     champs = user_latest_match_data_details.get("units", [])
+    
+    summoners = match_data.get("data", {}).get("tft", {}).get("matchV2", {}).get("participants", [])
+    
+    players_data = []
 
+    for summoner in summoners:
+        summoner_icon_id = summoner.get("profile", "").get("summonerInfo", "").get("profileIcon", "")
+        summoner_icon_url = f"https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/{summoner_icon_id}.png?1"
+        player_data = {
+            "summoner_icon": summoner_icon_url,
+            "summoner_name": summoner.get("profile", "").get("summonerInfo", "").get("gameName", ""),
+            "summoner_tag": summoner.get("profile", "").get("summonerInfo", "").get("tagLine", ""),
+            "summoner_placement": summoner.get("placement", 0),
+        }
+        players_data.append(player_data)
+            
     def get_trait_color(trait_slug, num_units):
         tiers = trait_data.get(trait_slug, {})
 
@@ -205,7 +218,8 @@ def format_match_details(profile_data, items_data ,match_data):
         "augments": formatted_augments,
         "champs": formatted_champs,
         "lp_info": lp_info,
-        "lp_diff": lp_diff
+        "lp_diff": lp_diff,
+        "players_data": players_data
     }
 
 def create_match_summary(profile_data, match_data,shcedule_run=False):
@@ -229,12 +243,35 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
 
     # Check match data structure
     latest_match_data = match_data.get("data", {}).get("tft", {}).get("matchV2")
-
     latest_match_id = get_match_latest_id(profile_data)
-    
+
     if not isinstance(latest_match_data, dict):
         print("Error: latest_match_data is None or not a dictionary.")
         return None
+    
+    # Extract ranked queue data
+    ranked_performance = summoner_info.get("summonerPerformance", {})
+    ranked_queue = []
+    for queue in ranked_performance:
+        if queue.get("performance", "").get("queue", "") == "RANKED":
+            ranked_queue = queue
+            break
+        else:
+            continue
+            
+    average_placement = ranked_queue.get("performance", {}).get("averagePlace", 0)
+    average_placement_formatted = f"{average_placement:.2f}"
+    
+    # Extract match data 
+    # Extract latest match details // damage dealt
+    damge_icon = f"https://www.metatft.com/icons/announce_icon_combat.png"
+    latest_match_details = latest_match_player(match_data, profile_data)
+    damage_dealt = latest_match_details.get("damageDealt", 0)
+    # Extract latest match details // time eliminated
+    time_eliminated_icon = f"https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-spells/SummonerTeleport.png"
+    time_eliminated = latest_match_details.get("timeEliminatedSeconds", 0)
+    time_eliminated_formatted = f"{time_eliminated // 60}m" if time_eliminated else "N/A"
+
     
     # Extract profile icon ID and construct URL
     puid = summoner_info.get("summonerInfo", {}).get("puuid", "")
@@ -304,6 +341,7 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
     traits = match_details["traits"]
     augments = match_details["augments"]
     champs = match_details["champs"]
+    players_data = match_details["players_data"]
 
     # HTML template
     html_template = '''
@@ -324,8 +362,8 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         }
             
         .container {
-            max-height: 325px;
-            max-width: 845px;
+            max-height: 350px;
+            max-width: 850px;
             background-color: #1e1e1e;
             color: #ffffff;
             font-family: "Noto Sans", serif;
@@ -338,10 +376,9 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         .match-summary {
             display: flex;
             position: relative;
-            margin-top: 20px;
             align-items: start;
             justify-content: start;
-            max-height: 195px;
+            max-height: 200px;
         }
 
         .profile-info {
@@ -364,10 +401,9 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         }
         .profile-info img {
             border-radius: 4px;
-            width: 175px;
-            height: 175px;
+            width: 100px;
+            height: 100px;
             object-fit: cover;
-            margin-right: 20px;
         }
         .lp-change .green {
             color: green;
@@ -375,7 +411,7 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         .lp-change .red {
             color: red;
         }
-        .champion-list {
+        .champion-container {
             display: flex;
             flex-wrap: wrap;
             flex: 1;
@@ -429,17 +465,79 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             display: flex;
             flex-direction: row;
             margin-bottom: 20px;
-            max-height: 120px;
+            max-height: 130px;
         }
-        .stat-container {
+        .stat-1-container {
             display: flex;
             flex-direction: column;
-            align-items: start;
             justify-content: flex-end;
             margin-left: 25px;
             margin-right: 15px;
             align-items: flex-end;
-
+        }
+        .first-container {
+            display: flex;
+            flex-direction: row;
+            padding: 15px;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+        }
+        .second-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 15px;
+            margin-left: 20px;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+            align-items: center;
+        }
+        .second-container-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            background: none;
+        }
+        .time_eliminated {
+            font-size: 0.7em;
+            background: none;
+            margin-top: 5px;
+        }
+        .damage_dealt {
+            font-size: 0.7em;
+            background: none;
+            margin-top: 5px;
+        }
+        .time-container {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        .time-container img {
+            width: 25px;
+            height: 25px;
+            margin-right: 5px;
+        }
+        .time-icon {
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+        }
+        .damage-container {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        .damage-container img {
+            width: 25px;
+            height: 25px;
+            margin-right: 5px;
+        }
+        .damge-icon {
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
         }
         .placement-container {
             display: flex;
@@ -462,21 +560,13 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         .time-patch {
             font-size: 0.6em;
         }
-        .first-container {
-            display: flex;
-            flex-direction: row;
-            padding: 15px;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #2e2e2e;
-            border-radius: 10px;
-        }
+
         .augments-container {
             display: flex;
             align-items: stretch;
             background-color: #2e2e2e;
             border-radius: 10px;
-            margin-left: 25px;
+            margin-right: 15px;
         }
 
         .augment-label {
@@ -498,17 +588,18 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             align-items: start;
             justify-content: center;
             max-width: 150px;
-            padding: 15px 15px 15px 8px;
-            background-color: #2e2e2e;
+            padding: 15px 15px 15px 15px;
+            background-color: #202637;
             border-radius: 10px;
+            flex: 1;
         }
         .augment {
             display: flex;
             align-items: center;
         }
         .augment img {
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             margin: 0 2px;
         }
         .augment-text {
@@ -522,16 +613,25 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             box-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6);
             border-radius: 10px; 
             padding: 5px; 
+        }
+        .champs-bar {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .traits-bar {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
         }        
         .traits-list {
             display: flex;
             flex: 1;
-            max-width: 400px;
-            padding: 5px 10px 10px 25px;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            align-content: flex-start;
+            max-width: 840px;
+            padding: 5px 5px 5px 5px;
+            flex-wrap: nowrap;
         }
         .trait {
             display: flex;
@@ -615,6 +715,38 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             color: #f3f3f3;
             text-shadow: 0 0 30px rgb(247 19 19 / 80%), 0 0 45px rgb(247 19 19 / 80%), 0 0 45px rgb(247 19 19 / 80%);
         }
+        .summoners-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .summoners-tag {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .summoner-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .summoner-icon img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        .summoner-tag {
+            font-size: 0.8em;
+            color: #838383;
+        }
+        .summoner-tag span {
+            font-size: 0.6em;
+
+        }
     </style>
 </head>
 <body>
@@ -625,7 +757,7 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
                 <div class="placement-number placement-{{ placement }}">{{ placement }}</div>
                 <div class="lp-change"><span class="{{ lp_color }}">{{ lp_diff }} LP</span></div>
             </div>
-            <div class="stat-container">
+            <div class="stat-1-container">
                 <div class="time-patch">{{ ver_patch }} ∙ {{ match_time }} ∙ {{ match_duration }}</div>
                 <div class="game-mode">{{ game_mode }}</div>
                 <div class="rank-icon">
@@ -634,9 +766,42 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
                 </div>
                 <div class="player-tag">{{ summoner_name }}<span>#{{ summoner_tag }}</span></div>
             </div>
+            <div class="profile-info">
+                <img src="{{ profile_icon_url }}" alt="Profile Picture">
+            </div>
         </div>
+        
+        <div class="second-container">
+            <div class="time-container">
+                <div class="time-icon">
+                    <img src="{{ time_eliminated_icon }}" alt="Time Icon">
+                    <div class="time_eliminated">{{ time_eliminated }}</div>
+                </div>
+                <div class="time_eliminated">Time Eliminated</div>
+            </div>
+            <div class="damage-container">
+                <div class="damge-icon">
+                    <img src="{{ damge_icon }}" alt="Damage Icon">
+                    <div class="damage_dealt">{{ damage_dealt }}</div>
+                </div>    
+                <div class="damage_dealt">Damage Dealt</div>
+            </div>
+        </div>
+        <div class="summoners-container">
+            <div class="summoners-tag">
+                    {% for player in players_data %}
+                    <div class="summoner-icon">
+                        <img src="{{ player.summoner_icon }}" alt="Player Icon"> 
+                        <div class="summoner-tag">{{ player.summoner_placement }} {{ player.summoner_name }}<span>#{{ player.summoner_tag }}</span></div>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <div class="match-summary">
         <div class="augments-container">
-            <div class="augment-label">Augments</div>
             <div class="augments-detail">
                 {% for augment in augments %}
                 <div class="augment">
@@ -646,36 +811,36 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
                 {% endfor %}
             </div>
         </div>
-            <div class="traits-list">
-                {% for trait in traits %}
-                    {% if trait.color %}  {# Only show traits with active style/color #}
-                    <div class="trait {{ trait.color }}">
-                        <img src="{{ trait.icon_url }}" alt="{{ trait.name }}">
-                        <div class="trait-text">{{ trait.name }}</div>
-                        <div class="trait-num-units">{{ trait.num_units }}</div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-    </div>
-    <div class="match-summary">
-        <div class="profile-info">
-            <img src="{{ profile_icon_url }}" alt="Profile Picture">
-        </div>
+        
         <div class="champion-list">
-            {% for champ in champs %}
-            <div class="champion">
-                <div class="champion-icon price-{{ champ.champ_price }}">
-                    <img src="{{ champ.image_url }}" alt="{{ champ.name }}">
-                </div>
-                <div class="stars">{{ champ.tier }}</div>
-                <div class="items">
-                    {% for item in champ['items'] %}
-                    <img src="{{ item.url }}" alt="{{ item.name }}">
+            <div class="traits-bar">
+                <div class="traits-list">
+                    {% for trait in traits %}
+                        {% if trait.color %}  {# Only show traits with active style/color #}
+                        <div class="trait {{ trait.color }}">
+                            <img src="{{ trait.icon_url }}" alt="{{ trait.name }}">
+                            <div class="trait-text">{{ trait.name }}</div>
+                            <div class="trait-num-units">{{ trait.num_units }}</div>
+                        </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
-            {% endfor %}
+            <div class="champs-bar">
+                {% for champ in champs %}
+                <div class="champion">
+                    <div class="champion-icon price-{{ champ.champ_price }}">
+                        <img src="{{ champ.image_url }}" alt="{{ champ.name }}">
+                    </div>
+                    <div class="stars">{{ champ.tier }}</div>
+                    <div class="items">
+                        {% for item in champ['items'] %}
+                        <img src="{{ item.url }}" alt="{{ item.name }}">
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+             </div>
         </div>
     </div>
 </div>
@@ -702,7 +867,13 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         game_mode=game_mode,
         match_time=match_time,
         match_duration=match_duration,
-        ver_patch=ver_patch
+        ver_patch=ver_patch,
+        average_placement=average_placement_formatted,
+        damage_dealt=damage_dealt,
+        time_eliminated=time_eliminated_formatted,
+        damge_icon=damge_icon,
+        time_eliminated_icon=time_eliminated_icon,
+        players_data=players_data
     )
 
     # Save the rendered HTML to a file
