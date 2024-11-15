@@ -16,7 +16,8 @@
         }
             
         .container {
-            max-height: 350px;
+            height: 390px;
+            max-height: 400px;
             max-width: 850px;
             background-color: #1e1e1e;
             color: #ffffff;
@@ -215,12 +216,11 @@
             font-size: 0.6em;
         }
 
-        .augments-container {
+        .perk-augments-container {
             display: flex;
             align-items: stretch;
-            background-color: #2e2e2e;
-            border-radius: 10px;
             margin-right: 15px;
+            flex-direction: column;
         }
 
         .augment-label {
@@ -418,6 +418,66 @@
             font-size: 0.8em; /* Adjust font size */
             margin-right: 8px; /* Space between the circle and the icon */
         }
+        .player-perk-tag {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: center;
+            max-width: 150px;
+            padding: 15px 15px 15px 15px;
+            background-color: #202637;
+            border-radius: 10px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+        .player-perk-tag {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: center;
+            max-width: 150px;
+            padding: 15px 15px 15px 15px;
+            background-color: #202637;
+            border-radius: 10px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+        .player-perk {
+            display: flex;
+            margin-right: 5px;
+            padding: 6px;
+            border-radius: 10px;
+            flex-direction: row;
+            align-items: center;
+        }
+        .player-perk img {
+            width: 18px;  /* Adjust size as needed */
+            height: 18px;
+            margin-right: 5px;
+        }
+        .perk-text {
+            font-size: 0.6em;  /* Smaller text size */
+            text-align: center;
+        }
+        .player-perk.purple {
+            background-color: #8e44ad;
+        }
+
+        .player-perk.red {
+            background-color: #c0392b;
+        }
+
+        .player-perk.green {
+            background-color: #27ae60;
+        }
+
+        .player-perk.blue {
+            background-color: #2980b9;
+        }
+
+        .player-perk.default {
+            background-color: #6b6b6b;
+        }
     </style>
 </head>
 <body>
@@ -544,7 +604,13 @@
     </div>
         
     <div class="match-summary">
-        <div class="augments-container">
+        <div class="perk-augments-container">
+            <div class="player-perk-tag">             
+                <div class="player-perk purple">
+                    <img src="https://www.metatft.com/icons/AP.svg" alt="AP Enjoyer">
+                    <div class="perk-text">AP Enjoyer</div>
+                </div>
+            </div>
             <div class="augments-detail">
                 
                 <div class="augment">

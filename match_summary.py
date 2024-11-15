@@ -57,6 +57,53 @@ def get_rank_icon_and_color(rating_text):
 def get_lp_change_color(lp_change):
     return "green" if lp_change > 0 else "red"
 
+def analyze_last_10_matches(matches_data):
+    if not matches_data:
+        return "No Data", "default"
+
+    # Initialize counters for various playstyles
+    ap_count = 0
+    ad_count = 0
+    tank_count = 0
+    utility_count = 0
+
+    # Loop through matches and count traits or champions
+    for match in matches_data:
+        participant = match
+        if not participant:
+            continue
+        # Analyze units
+        units = participant
+        for unit in units:
+            # Determine the type of the unit (AP, AD, Tank, Utility)
+            unit_traits = unit.get("traits", [])
+            if any(trait in ["Blaster", "Portal", "Mage"] for trait in unit_traits):
+                ap_count += 1
+            elif any(trait in ["Hunter", "Warrior", "Multistriker"] for trait in unit_traits):
+                ad_count += 1
+            elif any(trait in ["Shapeshifter", "Bastion", "Vanguard"] for trait in unit_traits):
+                tank_count += 1
+            elif any(trait in ["Incantor", "Perservers"] for trait in unit_traits):
+                utility_count += 1
+
+    # Determine the highest count
+    counts = {
+        "AP Enjoyer": ap_count,
+        "AD Enthusiast": ad_count,
+        "Tank Lover": tank_count,
+        "Utility Master": utility_count
+    }
+    perk_tag = max(counts, key=counts.get)
+    perk_color = {
+        "AP Enjoyer": "purple",
+        "AD Enthusiast": "red",
+        "Tank Lover": "green",
+        "Utility Master": "blue"
+    }.get(perk_tag, "default")
+    print(counts)
+    print(f"Perk Tag: {perk_tag}, Perk Color: {perk_color}")
+    return perk_tag, perk_color
+
 def latest_match_player(match_data, profile_data):
     if not match_data or not profile_data:
         return None  # Return None if puid_user or match_data is None
@@ -272,6 +319,14 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
     time_eliminated = latest_match_details.get("timeEliminatedSeconds", 0)
     time_eliminated_formatted = f"{time_eliminated // 60}m" if time_eliminated else "N/A"
 
+    # Fetch last 10 match IDs
+    match_history_entries = summoner_info.get("summonerProgressTracking", {}).get("progress", {}).get("entries", [])
+    last_10_match_traits = [entry.get("traits", "") for entry in match_history_entries[:10]]
+
+    # Analyze the last 10 matches to determine the perk tag
+    perk_tag, perk_color = analyze_last_10_matches(last_10_match_traits)
+    perk_icon_url = f"https://www.metatft.com/icons/AP.svg"
+    
     
     # Extract profile icon ID and construct URL
     puid = summoner_info.get("summonerInfo", {}).get("puuid", "")
@@ -362,7 +417,8 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         }
             
         .container {
-            max-height: 350px;
+            height: 390px;
+            max-height: 400px;
             max-width: 850px;
             background-color: #1e1e1e;
             color: #ffffff;
@@ -561,12 +617,11 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             font-size: 0.6em;
         }
 
-        .augments-container {
+        .perk-augments-container {
             display: flex;
             align-items: stretch;
-            background-color: #2e2e2e;
-            border-radius: 10px;
             margin-right: 15px;
+            flex-direction: column;
         }
 
         .augment-label {
@@ -764,6 +819,66 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             font-size: 0.8em; /* Adjust font size */
             margin-right: 8px; /* Space between the circle and the icon */
         }
+        .player-perk-tag {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: center;
+            max-width: 150px;
+            padding: 15px 15px 15px 15px;
+            background-color: #202637;
+            border-radius: 10px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+        .player-perk-tag {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: center;
+            max-width: 150px;
+            padding: 15px 15px 15px 15px;
+            background-color: #202637;
+            border-radius: 10px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+        .player-perk {
+            display: flex;
+            margin-right: 5px;
+            padding: 6px;
+            border-radius: 10px;
+            flex-direction: row;
+            align-items: center;
+        }
+        .player-perk img {
+            width: 18px;  /* Adjust size as needed */
+            height: 18px;
+            margin-right: 5px;
+        }
+        .perk-text {
+            font-size: 0.6em;  /* Smaller text size */
+            text-align: center;
+        }
+        .player-perk.purple {
+            background-color: #8e44ad;
+        }
+
+        .player-perk.red {
+            background-color: #c0392b;
+        }
+
+        .player-perk.green {
+            background-color: #27ae60;
+        }
+
+        .player-perk.blue {
+            background-color: #2980b9;
+        }
+
+        .player-perk.default {
+            background-color: #6b6b6b;
+        }
     </style>
 </head>
 <body>
@@ -820,7 +935,13 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
     </div>
         
     <div class="match-summary">
-        <div class="augments-container">
+        <div class="perk-augments-container">
+            <div class="player-perk-tag">             
+                <div class="player-perk {{ perk_color }}">
+                    <img src="{{ perk_icon_url }}" alt="{{ perk_tag }}">
+                    <div class="perk-text">{{ perk_tag }}</div>
+                </div>
+            </div>
             <div class="augments-detail">
                 {% for augment in augments %}
                 <div class="augment">
@@ -892,7 +1013,10 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         time_eliminated=time_eliminated_formatted,
         damge_icon=damge_icon,
         time_eliminated_icon=time_eliminated_icon,
-        players_data=players_data
+        players_data=players_data,
+        perk_tag=perk_tag,
+        perk_color=perk_color,
+        perk_icon_url=perk_icon_url,
     )
 
     # Save the rendered HTML to a file
