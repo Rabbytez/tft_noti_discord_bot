@@ -717,10 +717,16 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         }
         .summoners-container {
             display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-            align-items: center;
-            margin-top: 10px;
+            padding: 10px;
+            margin-left: 20px;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            flex-wrap: wrap;
+            flex: 1;
+            align-content: space-around;
         }
         .summoners-tag {
             display: flex;
@@ -730,22 +736,33 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         }
         .summoner-icon {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            margin-right: 10px;
+            margin-right: 8px;
+            flex-direction: row;
         }
         .summoner-icon img {
-            width: 40px;
-            height: 40px;
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
         }
         .summoner-tag {
             font-size: 0.8em;
             color: #838383;
+            margin-left: 5px;
         }
         .summoner-tag span {
-            font-size: 0.6em;
-
+            font-size: 0.8em;
+        }
+        .summonner-placement-number {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #2e2e2e; /* Adjust as needed */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8em; /* Adjust font size */
+            margin-right: 8px; /* Space between the circle and the icon */
         }
     </style>
 </head>
@@ -787,17 +804,19 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
                 <div class="damage_dealt">Damage Dealt</div>
             </div>
         </div>
-        <div class="summoners-container">
-            <div class="summoners-tag">
-                    {% for player in players_data %}
-                    <div class="summoner-icon">
-                        <img src="{{ player.summoner_icon }}" alt="Player Icon"> 
-                        <div class="summoner-tag">{{ player.summoner_placement }} {{ player.summoner_name }}<span>#{{ player.summoner_tag }}</span></div>
-                    {% endfor %}
+            <div class="summoners-container">
+                {% for player in players_data %}
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-{{ player.summoner_placement }}">{{ player.summoner_placement }}</div>
+                            <img src="{{ player.summoner_icon }}" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                {{ player.summoner_name }}<span>#{{ player.summoner_tag }}</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-        </div>
     </div>
         
     <div class="match-summary">

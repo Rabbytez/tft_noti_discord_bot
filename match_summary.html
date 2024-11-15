@@ -371,10 +371,16 @@
         }
         .summoners-container {
             display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-            align-items: center;
-            margin-top: 10px;
+            padding: 10px;
+            margin-left: 20px;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            flex-wrap: wrap;
+            flex: 1;
+            align-content: space-around;
         }
         .summoners-tag {
             display: flex;
@@ -384,22 +390,33 @@
         }
         .summoner-icon {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            margin-right: 10px;
+            margin-right: 8px;
+            flex-direction: row;
         }
         .summoner-icon img {
-            width: 40px;
-            height: 40px;
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
         }
         .summoner-tag {
             font-size: 0.8em;
             color: #838383;
+            margin-left: 5px;
         }
         .summoner-tag span {
-            font-size: 0.6em;
-
+            font-size: 0.8em;
+        }
+        .summonner-placement-number {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #2e2e2e; /* Adjust as needed */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8em; /* Adjust font size */
+            margin-right: 8px; /* Space between the circle and the icon */
         }
     </style>
 </head>
@@ -412,7 +429,7 @@
                 <div class="lp-change"><span class="red">-10 LP</span></div>
             </div>
             <div class="stat-1-container">
-                <div class="time-patch">14.22 ∙ 1 days ago ∙ 35m</div>
+                <div class="time-patch">14.22 ∙ 2 days ago ∙ 35m</div>
                 <div class="game-mode">Ranked</div>
                 <div class="rank-icon">
                     <img src="https://cdn.metatft.com/file/metatft/ranks/emerald.png" alt="Rank Icon">
@@ -441,45 +458,89 @@
                 <div class="damage_dealt">Damage Dealt</div>
             </div>
         </div>
-        <div class="summoners-container">
-            <div class="summoners-tag">
-                    
-                    <div class="summoner-icon">
-                        <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/29.png?1" alt="Player Icon"> 
-                        <div class="summoner-tag">1 CKKUBx<span>#9240</span></div>
-                    
-                    <div class="summoner-icon">
-                        <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/6446.png?1" alt="Player Icon"> 
-                        <div class="summoner-tag">2 F89iwih8jk<span>#1496</span></div>
-                    
-                    <div class="summoner-icon">
-                        <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/1452.png?1" alt="Player Icon"> 
-                        <div class="summoner-tag">3 パーム<span>#parm</span></div>
-                    
-                    <div class="summoner-icon">
-                        <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/6522.png?1" alt="Player Icon"> 
-                        <div class="summoner-tag">4 ฮอกไกโด<span>#9170</span></div>
-                    
-                    <div class="summoner-icon">
-                        <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/4895.png?1" alt="Player Icon"> 
-                        <div class="summoner-tag">5 beggy<span>#3105</span></div>
-                    
-                    <div class="summoner-icon">
-                        <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/5414.png?1" alt="Player Icon"> 
-                        <div class="summoner-tag">6 NMangocat<span>#6429</span></div>
-                    
-                    <div class="summoner-icon">
-                        <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/907.png?1" alt="Player Icon"> 
-                        <div class="summoner-tag">7 KRAJOOYAI<span>#TH2</span></div>
-                    
-                    <div class="summoner-icon">
-                        <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/27.png?1" alt="Player Icon"> 
-                        <div class="summoner-tag">8 weewee<span>#881</span></div>
-                    
+            <div class="summoners-container">
+                
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-1">1</div>
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/29.png?1" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                CKKUBx<span>#9240</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-2">2</div>
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/6446.png?1" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                F89iwih8jk<span>#1496</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-3">3</div>
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/1452.png?1" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                パーム<span>#parm</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-4">4</div>
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/6522.png?1" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                ฮอกไกโด<span>#9170</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-5">5</div>
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/4895.png?1" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                beggy<span>#3105</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-6">6</div>
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/5414.png?1" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                NMangocat<span>#6429</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-7">7</div>
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/907.png?1" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                KRAJOOYAI<span>#TH2</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-8">8</div>
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/27.png?1" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                weewee<span>#881</span>
+                            </div>
+                        </div>
+                    </div>
+                
             </div>
-        </div>
     </div>
         
     <div class="match-summary">
