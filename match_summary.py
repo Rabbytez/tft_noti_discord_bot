@@ -419,7 +419,7 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         .container {
             height: 390px;
             max-height: 400px;
-            max-width: 850px;
+            max-width: 880px;
             background-color: #1e1e1e;
             color: #ffffff;
             font-family: "Noto Sans", serif;
@@ -492,7 +492,7 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             color: gold;
             font-weight: bold;
             position: absolute;
-            bottom: 17px;
+            top: 45px;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -1056,8 +1056,8 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
 if __name__ == '__main__':
     total_start_time = time.time()  # Start total execution timing
 
-    riotname = "beggy"
-    tag = "3105"
+    riotname = "1010"
+    tag = "ten10"
 
     try:
         data_fetch_start_time = time.time()  # Start data fetching timing
