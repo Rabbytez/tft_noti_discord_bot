@@ -167,3 +167,5 @@ last_match_id.json
 *.jpg
 *.jpeg
 *.webp
+*.html
+*.json
