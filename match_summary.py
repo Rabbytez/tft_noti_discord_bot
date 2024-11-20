@@ -1056,8 +1056,8 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
 if __name__ == '__main__':
     total_start_time = time.time()  # Start total execution timing
 
-    riotname = "1010"
-    tag = "ten10"
+    riotname = "beggy"
+    tag = "3105"
 
     try:
         data_fetch_start_time = time.time()  # Start data fetching timing
