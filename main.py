@@ -1,3 +1,4 @@
+import queue
 import requests
 import json
 
@@ -29,29 +30,29 @@ def get_profile_data(riotname, tag):
 
     if response.status_code == 200:
         data = response.json()
-        match_id = data["matches"][0]["queueId"]
+        match_id = data["matches"][0]["matchId"]
+        queue_id = data["matches"][0]["queueId"]
         print("200 profile Request successful!")
+        print(f"Queue ID: {queue_id}")
         print(f"Match ID: {match_id}")
         with open(f"{folder}/{file_name}", "w") as f:
             json.dump(data, f, indent=4)
         try:
-            match_data = get_match_data(match_id,riotname,tag)
+            match_data = get_match_data(queue_id,match_id,riotname,tag)
         except:
             print("Error getting match data")
         
     else:
         print(f"Request failed with status code: {response.status_code}")
 
-    return data , match_id , match_data
+    return data , queue_id, match_id , match_data
 
-
-
-def get_match_data(match_id,riotname,tag):
+def get_match_data(queue_id,match_id,riotname,tag):
     
     file_name = f"TFT-13-match-data-{match_id}-{riotname}-{tag}.json"
     
     url = "https://tft.dakgg.io"
-    url_with_params = f"{url}/api/v1/summoners/th2/{riotname}-{tag}/matches?season=set13&page=1&queueId={match_id}"
+    url_with_params = f"{url}/api/v1/summoners/th2/{riotname}-{tag}/matches?season=set13&page=1&queueId={queue_id}"
 
     headers = {
         "Content-Type": "application/json",
@@ -83,7 +84,7 @@ def get_match_data(match_id,riotname,tag):
 
 # Test the functions
 if __name__ == "__main__":
-    match_id = "42590337"
+    
     riotname = "beggy"
     tag = "3105"
     profile_data = get_profile_data(riotname, tag)
