@@ -1,234 +1,557 @@
-from jinja2 import Template
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from collections.abc import Iterable
-import time
-import os
-import json
-import unittest
-
-test_data = {
-    'formatted_units': [],
-    'summoner_name': 'TestPlayer',
-    'summoner_tag': '123',
-    'rank_tier': 'GOLD',
-    'rank_division': 'I',
-    'lp_value': 75,
-    'lp_diff': 20,
-    'placement': 3,
-    'formatted_traits': [],
-    'champions': []
-}
-
-def create_match_summary(profile_data):
-    # Validate and prepare data
-    formatted_units = profile_data.get('formatted_units', [])
-    summoner_name = profile_data.get('summoner_name', '')
-    summoner_tag = profile_data.get('summoner_tag', '')
-    rank_tier = profile_data.get('rank_tier', '')
-    rank_division = profile_data.get('rank_division', '')
-    lp_value = profile_data.get('lp_value', 0)
-    lp_diff = profile_data.get('lp_diff', 0)
-    placement = profile_data.get('placement', 0)
-    formatted_traits = profile_data.get('formatted_traits', [])
-    champions = profile_data.get('champions', [])
-
-    # Debug prints
-    print("Data types of template variables:")
-    print(f"formatted_units: {type(formatted_units)}")
-    print(f"formatted_traits: {type(formatted_traits)}")
-    print(f"champions: {type(champions)}")
-
-    # Ensure lists are actually lists
-    if not isinstance(formatted_units, list):
-        formatted_units = list(formatted_units) if hasattr(formatted_units, '__iter__') else []
-    if not isinstance(formatted_traits, list):
-        formatted_traits = list(formatted_traits) if hasattr(formatted_traits, '__iter__') else []
-    if not isinstance(champions, list):
-        champions = list(champions) if hasattr(champions, '__iter__') else []
-
-    # HTML template (your existing template)
+# HTML template
     html_template = """
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Match Summary</title>
-        <style>
-            body { font-family: Arial, sans-serif; background-color: #1c1c1e; color: #f7f7f7; }
-            .summary { border: 1px solid #ccc; padding: 20px; margin: 20px; background-color: #2c2f33; }
-            .title { font-size: 24px; font-weight: bold; margin-bottom: 10px; color: #ffd700; }
-            .info { font-size: 18px; margin: 5px 0; }
-            .traits, .units, .champion-list { margin-top: 10px; }
-            .unit-item { margin: 5px 0; }
-            .rank { font-weight: bold; color: #4caf50; }
-            .champion-item { display: inline-block; margin: 5px; }
-            .champion-icon img { width: 50px; height: 50px; }
-        </style>
-    </head>
-    <body>
-        <div class="summary">
-            <div class="title">Match Summary</div>
-            <div class="info">Summoner: {{ summoner_name }}#{{ summoner_tag }}</div>
-            <div class="info">Rank: <span class="rank">{{ rank_tier }} {{ rank_division }}</span> ({{ lp_value }} LP)</div>
-            <div class="info">LP Change: {{ lp_diff }}</div>
-            <div class="info">Placement: {{ placement }}</div>
-
-            <div class="traits">
-                <div class="title">Traits</div>
-                <ul>
-                    {% for trait in formatted_traits %}
-                    <li>{{ trait }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="units">
-                <div class="title">Units</div>
-                <ul>
-                    {% for unit in formatted_units %}
-                    <li class="unit-item">
-                        <strong>{{ unit.name }}</strong> (Tier: {{ unit.tier }})<br>
-                        Items: 
-                        {% if unit.items %}
-                            <ul>
-                                {% for item in unit.items %}
-                                    <li>
-                                        <img src="{{ item.url }}" alt="{{ item.name }}" style="width: 30px; height: 30px;"> 
-                                        {{ item.name }}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            None
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-                        
-            <div class="champion-list">
-                <div class="title">Champions</div>
-                {% for champion in champions %}
-                <div class="champion-item">
-                    <div class="champion-icon price-{{ champion.price }}">
-                        <img src="{{ champion.icon }}" alt="Champion Icon" onerror="this.onerror=null; this.src='https://via.placeholder.com/50';">
-                    </div>
-                    <div class="champion-stars">{{ champion.stars }}</div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </body>
-    </html>
-    """
-    
-        # Render the HTML with Jinja2
-    template = Template(html_template)
-    try:
-        rendered_html = template.render(
-            formatted_units=formatted_units,
-            summoner_name=summoner_name,
-            summoner_tag=summoner_tag,
-            rank_tier=rank_tier,
-            rank_division=rank_division,
-            lp_value=lp_value,
-            lp_diff=lp_diff,
-            placement=placement,
-            formatted_traits=formatted_traits,
-            champions=champions
-        )
-        
-        # Create 'outputs' folder if it does not exist
-        output_folder = "outputs"
-        os.makedirs(output_folder, exist_ok=True)
-
-        # Save HTML to the outputs folder
-        html_path = os.path.join(output_folder, "match_summary.html")
-        with open(html_path, 'w', encoding='utf-8') as f:
-            f.write(rendered_html)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,553;1,553&display=swap" rel="stylesheet">
+    <title>Match Summary</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
             
-        return html_path
-        
-    except Exception as e:
-        print(f"Error rendering template: {str(e)}")
-        print(f"Data causing error:")
-        print(f"formatted_units: {formatted_units}")
-        print(f"formatted_traits: {formatted_traits}")
-        print(f"champions: {champions}")
-        raise
+        .container {
+            height: 390px;
+            max-height: 400px;
+            max-width: 880px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            font-family: "Noto Sans", serif;
+            font-weight: 553;
+            font-style: normal;
+            padding: 25px;
+            position: relative;
+        }
+    
+        .match-summary {
+            display: flex;
+            position: relative;
+            align-items: start;
+            justify-content: start;
+            max-height: 200px;
+        }
 
-html_path = create_match_summary(test_data)
-print(f"Generated HTML file at: {html_path}")
+        .profile-info {
+            display: flex;
+            align-items: center;
+        }
+        .profile-info img {
+            border-radius: 50%;
+            width: 100px; /* Adjust the size as needed */
+            height: 100px;
+            object-fit: cover;
+        }
+        .summary-details {
+            margin-left: 20px;
+        }
+        .profile-info {
+            display: flex;
+            align-items: start;
+            height: 100%;
+        }
+        .profile-info img {
+            border-radius: 4px;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+        .lp-change .green {
+            color: green;
+        }
+        .lp-change .red {
+            color: red;
+        }
+        .champion-container {
+            display: flex;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        .champion {
+            position: relative;
+            margin: 5px;
+            text-align: center;
+        }
+        .champion-icon{
+            width: 55px;
+            height: 55px;
+            border-radius: 10px;
+        }
+        .champion-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+        }
+        .champion .stars {
+            font-size: 1.0em;
+            color: gold;
+            font-weight: bold;
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .items {
+            margin-top: 5px;
+            display: flex;
+            justify-content: center;
+            
+        }
+        .items img {
+            width: 16px;
+            height: 16px;
+            border: 0.5px solid #1a1a1a;
+            margin: 0 1px;
+        }
+        .rank-icon {
+            display: flex;
+            align-items: center;
+        }
+        .rank-icon img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+        .stat-bar {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 20px;
+            max-height: 130px;
+        }
+        .stat-1-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            margin-left: 25px;
+            margin-right: 15px;
+            align-items: flex-end;
+        }
+        .first-container {
+            display: flex;
+            flex-direction: row;
+            padding: 15px;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+        }
+        .second-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 15px;
+            margin-left: 20px;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+            align-items: center;
+        }
+        .second-container-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            background: none;
+        }
+        .time_eliminated {
+            font-size: 0.7em;
+            background: none;
+            margin-top: 5px;
+        }
+        .damage_dealt {
+            font-size: 0.7em;
+            background: none;
+            margin-top: 5px;
+        }
+        .time-container {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        .time-container img {
+            width: 25px;
+            height: 25px;
+            margin-right: 5px;
+        }
+        .time-icon {
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+        }
+        .damage-container {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        .damage-container img {
+            width: 25px;
+            height: 25px;
+            margin-right: 5px;
+        }
+        .damge-icon {
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+        }
+        .placement-container {
+            display: flex;
+            flex-direction: column;
+            margin-left: 10px;
+            align-items: center;
+        }
+        .placement-number {
+            font-size: 3.2em;
+            font-weight: bold;
+            background: none;
+            color: inherit;
+        }
+        .game-mode {
+            display: contents;
+            align-items: start;
+            font-size: 1.6em;
+            font-weight: bold;
+        }
+        .time-patch {
+            font-size: 0.6em;
+        }
 
-class TestMatchSummary(unittest.TestCase):
-    def setUp(self):
-        self.test_data = {
-            'formatted_units': [
-                {'name': 'Unit1', 'tier': 1, 'items': [{'url': 'item1.png', 'name': 'Item1'}]},
-                {'name': 'Unit2', 'tier': 2, 'items': []}
-            ],
-            'summoner_name': 'TestPlayer',
-            'summoner_tag': '123',
-            'rank_tier': 'GOLD',
-            'rank_division': 'I',
-            'lp_value': 75,
-            'lp_diff': 20,
-            'placement': 3,
-            'formatted_traits': ['Trait1', 'Trait2'],
-            'champions': [
-                {'name': 'Champ1', 'price': 1, 'icon': 'icon1.png', 'stars': '★★★'},
-                {'name': 'Champ2', 'price': 2, 'icon': 'icon2.png', 'stars': '★★'}
-            ]
+        .perk-augments-container {
+            display: flex;
+            align-items: stretch;
+            margin-right: 15px;
+            flex-direction: column;
+        }
+
+        .augment-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            background-color: #9d3f3f;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 10px 10px 0;
+        }
+        .glow-container {
+            position: absolute;
+            display: contents;
+            box-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6);
+            border-radius: 10px; 
+            padding: 5px; 
+        }
+        .champs-bar {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .traits-bar {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+        }        
+        .traits-list {
+            display: flex;
+            flex: 1;
+            max-width: 840px;
+            padding: 5px 5px 5px 5px;
+            flex-wrap: nowrap;
+        }
+        .trait {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .trait img {
+            width: 18px;  /* Adjust size as needed */
+            height: 18px;
+            margin-right: 5px;
+        }
+        .trait-text {
+            font-size: 0.6em;  /* Smaller text size */
+            text-align: center;
+        }
+        .trait-num-units {
+            font-size: 0.6em;  /* Smaller text size */
+            margin-left: 4px;
+            margin-right: 4px;
+        }
+        .player-tag {
+            font-size: 0.75em;
+            color: #838383;
+        }
+        .silver { background-color: #593926; }
+        .gold { background-color: #dbaf0d; }
+        .prismatic { background-color: #8432ab; }
+        .copper { background-color: #b87333; }
+        .default { background-color: #6b6b6b; color: white; }
+        .price-1 {
+            border: 3.5px solid silver;
+        }
+        .price-2 {
+            border: 3.5px solid green;
+        }
+        .price-3 {
+            border: 3.5px solid blue;
+        }
+        .price-4 {
+            border: 3.5px solid purple;
+        }
+        .price-5 {
+            border: 3.5px solid #dbaf0d;
+        }
+        .placement-1 {
+        color: #ebe729;
+        text-shadow: 0 0 40px rgb(247 217 59 / 91%), 0 0 55px rgb(255 239 92), 0 0 55px rgb(255 233 31);
         }
         
-        # Ensure output directory exists
-        self.output_dir = "outputs"
-        os.makedirs(self.output_dir, exist_ok=True)
+        /* Placement color and gradient for ranks 2-4 */
+        .placement-2 {
+            color: #ffe940;
+            text-shadow: 0 0 30px rgb(219 179 24 / 76%), 0 0 35px rgb(201 158 16 / 80%);
+        }
+        .placement-3 {
+            color: #ff9c1c;
+            text-shadow: 0 0 30px rgb(195 109 0 / 76%), 0 0 35px rgb(201 158 16 / 80%);
+        }
+        .placement-4 {
+            color: #ff7007;
+            text-shadow: 0 0 30px rgb(195 109 0 / 76%), 0 0 35px rgb(201 158 16 / 80%);
+        }
         
-    def tearDown(self):
-        # Clean up test files
-        try:
-            os.remove(os.path.join(self.output_dir, "match_summary.html"))
-        except FileNotFoundError:
-            pass
+        /* Placement color and gradient for ranks 5-8 */
+        .placement-5 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(211 0 0 / 60%), 0 0 35px rgb(217 131 131 / 80%);
+        }
+        .placement-6 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(211 0 0 / 70%), 0 0 35px rgb(217 131 131 / 80%);
+        }
+        .placement-7 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(211 0 0 / 80%), 0 0 35px rgb(217 131 131 / 80%);
+        }
+        .placement-8 {
+            color: #f3f3f3;
+            text-shadow: 0 0 30px rgb(247 19 19 / 80%), 0 0 45px rgb(247 19 19 / 80%), 0 0 45px rgb(247 19 19 / 80%);
+        }
+        .summoners-container {
+            display: flex;
+            padding: 10px;
+            margin-left: 20px;
+            background-color: #2e2e2e;
+            border-radius: 10px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            flex-wrap: wrap;
+            flex: 1;
+            align-content: space-around;
+        }
+        .summoners-tag {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .summoner-icon {
+            display: flex;
+            align-items: center;
+            margin-right: 8px;
+            flex-direction: row;
+        }
+        .summoner-icon img {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+        }
+        .summoner-tag {
+            font-size: 0.8em;
+            color: #838383;
+            margin-left: 5px;
+        }
+        .summoner-tag span {
+            font-size: 0.8em;
+        }
+        .summonner-placement-number {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #2e2e2e; /* Adjust as needed */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8em; /* Adjust font size */
+            margin-right: 8px; /* Space between the circle and the icon */
+        }
+        .player-perk-tag {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: center;
+            max-width: 150px;
+            padding: 15px 15px 15px 15px;
+            background-color: #202637;
+            border-radius: 10px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+        .player-perk-tag {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: center;
+            max-width: 150px;
+            padding: 15px 15px 15px 15px;
+            background-color: #202637;
+            border-radius: 10px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+        .player-perk {
+            display: flex;
+            margin-right: 5px;
+            padding: 6px;
+            border-radius: 10px;
+            flex-direction: row;
+            align-items: center;
+        }
+        .player-perk img {
+            width: 18px;  /* Adjust size as needed */
+            height: 18px;
+            margin-right: 5px;
+        }
+        .perk-text {
+            font-size: 0.6em;  /* Smaller text size */
+            text-align: center;
+        }
+        .player-perk.purple {
+            background-color: #8e44ad;
+        }
 
-    def test_valid_input(self):
-        """Test with valid input data"""
-        html_path = create_match_summary(self.test_data)
-        self.assertTrue(os.path.exists(html_path))
-        with open(html_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            self.assertIn(self.test_data['summoner_name'], content)
-            self.assertIn(self.test_data['rank_tier'], content)
+        .player-perk.red {
+            background-color: #c0392b;
+        }
 
-    def test_missing_data(self):
-        """Test with missing data fields"""
-        minimal_data = {'summoner_name': 'Player'}
-        html_path = create_match_summary(minimal_data)
-        self.assertTrue(os.path.exists(html_path))
+        .player-perk.green {
+            background-color: #27ae60;
+        }
 
-    def test_empty_lists(self):
-        """Test with empty lists"""
-        empty_data = self.test_data.copy()
-        empty_data['formatted_units'] = []
-        empty_data['formatted_traits'] = []
-        empty_data['champions'] = []
-        html_path = create_match_summary(empty_data)
-        self.assertTrue(os.path.exists(html_path))
+        .player-perk.blue {
+            background-color: #2980b9;
+        }
 
-    def test_invalid_types(self):
-        """Test with invalid data types"""
-        invalid_data = self.test_data.copy()
-        invalid_data['formatted_units'] = "not a list"
-        invalid_data['lp_value'] = "not a number"
-        with self.assertRaises(Exception):
-            create_match_summary(invalid_data)
-
-if __name__ == '__main__':
-    unittest.main()
+        .player-perk.default {
+            background-color: #6b6b6b;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="stat-bar">
+        <div class="first-container">
+            <div class="placement-container">
+                <div class="placement-number placement-{{ placement }}">{{ placement }}</div>
+                <div class="lp-change"><span class="{{ lp_color }}">{{ lp_diff }} LP</span></div>
+            </div>
+            <div class="stat-1-container">
+                <div class="time-patch">{{ ver_patch }} ∙ {{ match_time }} ∙ {{ match_duration }}</div>
+                <div class="game-mode">{{ game_mode }}</div>
+                <div class="rank-icon">
+                    <img src="{{ rank_icon }}" alt="Rank Icon">
+                    {{ rank_tier }} {{ lp_value }} LP
+                </div>
+                <div class="player-tag">{{ summoner_name }}<span>#{{ summoner_tag }}</span></div>
+            </div>
+            <div class="profile-info">
+                <img src="{{ profile_icon_url }}" alt="Profile Picture">
+            </div>
+        </div>
+        
+        <div class="second-container">
+            <div class="time-container">
+                <div class="time-icon">
+                    <img src="{{ time_eliminated_icon }}" alt="Time Icon">
+                    <div class="time_eliminated">{{ time_eliminated }}</div>
+                </div>
+                <div class="time_eliminated">Time Eliminated</div>
+            </div>
+            <div class="damage-container">
+                <div class="damge-icon">
+                    <img src="{{ damge_icon }}" alt="Damage Icon">
+                    <div class="damage_dealt">{{ damage_dealt }}</div>
+                </div>    
+                <div class="damage_dealt">Damage Dealt</div>
+            </div>
+        </div>
+            <div class="summoners-container">
+                {% for player in players_data %}
+                    <div class="summoners-tag">
+                        <div class="summoner-icon">
+                            <div class="summonner-placement-number placement-{{ player.summoner_placement }}">{{ player.summoner_placement }}</div>
+                            <img src="{{ player.summoner_icon }}" alt="Summoner Icon"> 
+                            <div class="summoner-tag">
+                                {{ player.summoner_name }}<span>#{{ player.summoner_tag }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+    </div>
+        
+    <div class="match-summary">
+        <div class="perk-augments-container">
+            <div class="player-perk-tag">             
+                <div class="player-perk {{ perk_color }}">
+                    <img src="{{ perk_icon_url }}" alt="{{ perk_tag }}">
+                    <div class="perk-text">{{ perk_tag }}</div>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        <div class="champion-list">
+            <div class="traits-bar">
+                <div class="traits-list">
+                    {% for trait in traits %}
+                        {% if trait.color %}  {# Only show traits with active style/color #}
+                        <div class="trait {{ trait.color }}">
+                            <img src="{{ trait.icon_url }}" alt="{{ trait.name }}">
+                            <div class="trait-text">{{ trait.name }}</div>
+                            <div class="trait-num-units">{{ trait.num_units }}</div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="champs-bar">
+                {% for champ in champs %}
+                <div class="champion">
+                    <div class="champion-icon price-{{ champ.champ_price }}">
+                        <img src="{{ champ.image_url }}" alt="{{ champ.name }}">
+                    </div>
+                    <div class="stars">{{ champ.tier }}</div>
+                    <div class="items">
+                        {% for item in champ['items'] %}
+                        <img src="{{ item.url }}" alt="{{ item.name }}">
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+             </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+"""
