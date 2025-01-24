@@ -32,7 +32,7 @@ def get_profile_data(riotname, tag):
             "bHyperRollFilter": {"queues": ["HYPER_ROLL"], "patches": []},
             "lpGainsPerPage": 150,
             "filter": [
-                {"gameName": riotname, "tagLine": tag, "region": "TH", "set": "12"}
+                {"gameName": riotname, "tagLine": tag, "region": "SG", "set": "13"}
             ],
             "filterStats": {
                 "queue": None,
@@ -71,7 +71,7 @@ def get_profile_data(riotname, tag):
 
     return data
 
-def get_match_data(match_id,riotname,tag,region="TH"):
+def get_match_data(match_id,riotname,tag,region="SG"):
     
     file_name = f"v2-match-data-{match_id}-{region}-{riotname}-{tag}.json"
     
@@ -85,7 +85,7 @@ def get_match_data(match_id,riotname,tag,region="TH"):
         "cookie": "appmobaabgroup=A; appcfcountry=TH;",
         "dnt": "1",
         "origin": "https://mobalytics.gg",
-        "referer": "https://mobalytics.gg/tft/profile/th/overview",
+        "referer": "https://mobalytics.gg/tft/profile/sg/overview",
         "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
         "sec-ch-ua-mobile": "?0",
         "sec-ch-ua-platform": '"Windows"',

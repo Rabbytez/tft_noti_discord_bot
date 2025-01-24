@@ -18,7 +18,7 @@
         .container {
             height: 390px;
             max-height: 400px;
-            max-width: 850px;
+            max-width: 880px;
             background-color: #1e1e1e;
             color: #ffffff;
             font-family: "Noto Sans", serif;
@@ -91,7 +91,7 @@
             color: gold;
             font-weight: bold;
             position: absolute;
-            bottom: 17px;
+            top: 45px;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -377,9 +377,9 @@
             border-radius: 10px;
             justify-content: center;
             align-items: flex-start;
-            flex-direction: column;
-            flex-wrap: wrap;
-            flex: 1;
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: repeat(4, auto);
             align-content: space-around;
         }
         .summoners-tag {
@@ -421,6 +421,7 @@
         .player-perk-tag {
             display: flex;
             flex-direction: column;
+            text-align: center;
             align-items: start;
             justify-content: center;
             max-width: 150px;
@@ -429,30 +430,19 @@
             border-radius: 10px;
             flex: 1;
             margin-bottom: 20px;
-        }
-        .player-perk-tag {
-            display: flex;
-            flex-direction: column;
-            align-items: start;
-            justify-content: center;
-            max-width: 150px;
-            padding: 15px 15px 15px 15px;
-            background-color: #202637;
-            border-radius: 10px;
-            flex: 1;
-            margin-bottom: 20px;
+            font-size: 0.8em;
         }
         .player-perk {
             display: flex;
-            margin-right: 5px;
-            padding: 6px;
-            border-radius: 10px;
-            flex-direction: row;
             align-items: center;
+            margin-right: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            margin-top: 5px;
         }
         .player-perk img {
-            width: 18px;  /* Adjust size as needed */
-            height: 18px;
+            width: 15px;  /* Adjust size as needed */
+            height: 15px;
             margin-right: 5px;
         }
         .perk-text {
@@ -460,23 +450,23 @@
             text-align: center;
         }
         .player-perk.purple {
-            background-color: #8e44ad;
+            color: #8432ab;
         }
 
         .player-perk.red {
-            background-color: #c0392b;
+            color: #e74c3c;
         }
 
         .player-perk.green {
-            background-color: #27ae60;
+            color: #2ecc71;
         }
 
         .player-perk.blue {
-            background-color: #2980b9;
+            color: #3498db;
         }
 
         .player-perk.default {
-            background-color: #6b6b6b;
+            color: #6b6b6b;
         }
     </style>
 </head>
@@ -485,20 +475,20 @@
     <div class="stat-bar">
         <div class="first-container">
             <div class="placement-container">
-                <div class="placement-number placement-5">5</div>
-                <div class="lp-change"><span class="red">-10 LP</span></div>
+                <div class="placement-number placement-1">1</div>
+                <div class="lp-change"><span class="green">+45 LP</span></div>
             </div>
             <div class="stat-1-container">
-                <div class="time-patch">14.22 ∙ 2 days ago ∙ 35m</div>
+                <div class="time-patch">13.4 ∙ 24 minutes ago ∙ 38m</div>
                 <div class="game-mode">Ranked</div>
                 <div class="rank-icon">
                     <img src="https://cdn.metatft.com/file/metatft/ranks/emerald.png" alt="Rank Icon">
-                    IV 37 LP
+                    II 83 LP
                 </div>
-                <div class="player-tag">beggy<span>#3105</span></div>
+                <div class="player-tag">1010<span>#ten10</span></div>
             </div>
             <div class="profile-info">
-                <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/4895.png?1" alt="Profile Picture">
+                <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/4378.png?1" alt="Profile Picture">
             </div>
         </div>
         
@@ -506,14 +496,14 @@
             <div class="time-container">
                 <div class="time-icon">
                     <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-spells/SummonerTeleport.png" alt="Time Icon">
-                    <div class="time_eliminated">32m</div>
+                    <div class="time_eliminated">37m</div>
                 </div>
                 <div class="time_eliminated">Time Eliminated</div>
             </div>
             <div class="damage-container">
                 <div class="damge-icon">
                     <img src="https://www.metatft.com/icons/announce_icon_combat.png" alt="Damage Icon">
-                    <div class="damage_dealt">87</div>
+                    <div class="damage_dealt">206</div>
                 </div>    
                 <div class="damage_dealt">Damage Dealt</div>
             </div>
@@ -523,9 +513,9 @@
                     <div class="summoners-tag">
                         <div class="summoner-icon">
                             <div class="summonner-placement-number placement-1">1</div>
-                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/29.png?1" alt="Summoner Icon"> 
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/4378.png?1" alt="Summoner Icon"> 
                             <div class="summoner-tag">
-                                CKKUBx<span>#9240</span>
+                                1010<span>#ten10</span>
                             </div>
                         </div>
                     </div>
@@ -533,9 +523,9 @@
                     <div class="summoners-tag">
                         <div class="summoner-icon">
                             <div class="summonner-placement-number placement-2">2</div>
-                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/6446.png?1" alt="Summoner Icon"> 
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/6772.png?1" alt="Summoner Icon"> 
                             <div class="summoner-tag">
-                                F89iwih8jk<span>#1496</span>
+                                Wendyyy<span>#AESPA</span>
                             </div>
                         </div>
                     </div>
@@ -543,9 +533,9 @@
                     <div class="summoners-tag">
                         <div class="summoner-icon">
                             <div class="summonner-placement-number placement-3">3</div>
-                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/1452.png?1" alt="Summoner Icon"> 
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/29.png?1" alt="Summoner Icon"> 
                             <div class="summoner-tag">
-                                パーム<span>#parm</span>
+                                Kenii17092<span>#YME</span>
                             </div>
                         </div>
                     </div>
@@ -553,9 +543,9 @@
                     <div class="summoners-tag">
                         <div class="summoner-icon">
                             <div class="summonner-placement-number placement-4">4</div>
-                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/6522.png?1" alt="Summoner Icon"> 
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/6594.png?1" alt="Summoner Icon"> 
                             <div class="summoner-tag">
-                                ฮอกไกโด<span>#9170</span>
+                                Haewonnnn<span>#mixx</span>
                             </div>
                         </div>
                     </div>
@@ -563,9 +553,9 @@
                     <div class="summoners-tag">
                         <div class="summoner-icon">
                             <div class="summonner-placement-number placement-5">5</div>
-                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/4895.png?1" alt="Summoner Icon"> 
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/1446.png?1" alt="Summoner Icon"> 
                             <div class="summoner-tag">
-                                beggy<span>#3105</span>
+                                Kujira<span>#2434</span>
                             </div>
                         </div>
                     </div>
@@ -573,9 +563,9 @@
                     <div class="summoners-tag">
                         <div class="summoner-icon">
                             <div class="summonner-placement-number placement-6">6</div>
-                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/5414.png?1" alt="Summoner Icon"> 
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/767.png?1" alt="Summoner Icon"> 
                             <div class="summoner-tag">
-                                NMangocat<span>#6429</span>
+                                iFeelsBadMan<span>#6969</span>
                             </div>
                         </div>
                     </div>
@@ -583,9 +573,9 @@
                     <div class="summoners-tag">
                         <div class="summoner-icon">
                             <div class="summonner-placement-number placement-7">7</div>
-                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/907.png?1" alt="Summoner Icon"> 
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/4970.png?1" alt="Summoner Icon"> 
                             <div class="summoner-tag">
-                                KRAJOOYAI<span>#TH2</span>
+                                deKnight<span>#343</span>
                             </div>
                         </div>
                     </div>
@@ -593,9 +583,9 @@
                     <div class="summoners-tag">
                         <div class="summoner-icon">
                             <div class="summonner-placement-number placement-8">8</div>
-                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/27.png?1" alt="Summoner Icon"> 
+                            <img src="https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/657.png?1" alt="Summoner Icon"> 
                             <div class="summoner-tag">
-                                weewee<span>#881</span>
+                                Morning<span>#dmc</span>
                             </div>
                         </div>
                     </div>
@@ -605,27 +595,22 @@
         
     <div class="match-summary">
         <div class="perk-augments-container">
-            <div class="player-perk-tag">             
+            <div class="player-perk-tag">
+                <div style="align-self: center">Top Comp</div>
+                        
                 <div class="player-perk purple">
-                    <img src="https://www.metatft.com/icons/AP.svg" alt="AP Enjoyer">
-                    <div class="perk-text">AP Enjoyer</div>
+                    <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set13/24-enforcer.svg?v=61" alt="enforcer">
+                    <div class="perk-text">enforcer</div>
                 </div>
-            </div>
-            <div class="augments-detail">
-                
-                <div class="augment">
-                    <img src="https://cdn.mobalytics.gg/assets/tft/images/hextech-augments/set12/crown_shapeshifter_iii.webp?v=61" alt="Shapeshifter Crown">
-                    <div class="augment-text">Shapeshifter Crown</div>
+                        
+                <div class="player-perk blue">
+                    <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set13/24-ambusher.svg?v=61" alt="ambusher">
+                    <div class="perk-text">ambusher</div>
                 </div>
-                
-                <div class="augment">
-                    <img src="https://cdn.mobalytics.gg/assets/tft/images/hextech-augments/set12/placebo_i.webp?v=61" alt="Placebo">
-                    <div class="augment-text">Placebo</div>
-                </div>
-                
-                <div class="augment">
-                    <img src="https://cdn.mobalytics.gg/assets/tft/images/hextech-augments/set12/inspiring-epitaph.webp?v=61" alt="Inspiring Epitaph">
-                    <div class="augment-text">Inspiring Epitaph</div>
+                        
+                <div class="player-perk green">
+                    <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set13/24-scrap.svg?v=61" alt="scrap">
+                    <div class="perk-text">scrap</div>
                 </div>
                 
             </div>
@@ -637,18 +622,60 @@
                     
                           
                         <div class="trait gold">
-                            <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-shapeshifter.svg?v=61" alt="Shapeshifter">
-                            <div class="trait-text">Shapeshifter</div>
-                            <div class="trait-num-units">7</div>
+                            <img src="https://cdn.lolchess.gg/upload/images/traits/Enforcer_normal_1731045576-Enforcer.svg" alt="Enforcer">
+                            <div class="trait-text">Enforcer</div>
+                            <div class="trait-num-units">8</div>
+                        </div>
+                        
+                    
+                          
+                        <div class="trait copper">
+                            <img src="https://cdn.lolchess.gg/upload/images/traits/PitFighter_normal_1731045747-PitFighter.svg" alt="Pit-fighter">
+                            <div class="trait-text">Pit-fighter</div>
+                            <div class="trait-num-units">2</div>
+                        </div>
+                        
+                    
+                          
+                        <div class="trait copper">
+                            <img src="https://cdn.lolchess.gg/upload/images/traits/Sniper_normal_1731045886-Sniper.svg" alt="Sniper">
+                            <div class="trait-text">Sniper</div>
+                            <div class="trait-num-units">2</div>
+                        </div>
+                        
+                    
+                          
+                        <div class="trait copper">
+                            <img src="https://cdn.lolchess.gg/upload/images/traits/Sentinel_normal_1731045721-Sentinel.svg" alt="Sentinel">
+                            <div class="trait-text">Sentinel</div>
+                            <div class="trait-num-units">2</div>
+                        </div>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                          
+                        <div class="trait gold">
+                            <img src="https://cdn.lolchess.gg/upload/images/traits/HighRoller_normal_1731045617-HighRoller.svg" alt="High-roller">
+                            <div class="trait-text">High-roller</div>
+                            <div class="trait-num-units">1</div>
                         </div>
                         
                     
                           
                         <div class="trait gold">
-                            <img src="https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/24-dragon.svg?v=61" alt="Dragon">
-                            <div class="trait-text">Dragon</div>
-                            <div class="trait-num-units">3</div>
+                            <img src="https://cdn.lolchess.gg/upload/images/traits/JunkerKing_normal_1731045467-junkerKing.svg" alt="Junker-king">
+                            <div class="trait-text">Junker-king</div>
+                            <div class="trait-num-units">1</div>
                         </div>
+                        
+                    
                         
                     
                 </div>
@@ -657,19 +684,7 @@
                 
                 <div class="champion">
                     <div class="champion-icon price-1">
-                        <img src="https://rerollcdn.com/characters/Skin/12/Nomsy.png" alt="Nomsy">
-                    </div>
-                    <div class="stars">★★</div>
-                    <div class="items">
-                        
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/guinsoos-rageblade.png?v=60" alt="guinsoos-rageblade">
-                        
-                    </div>
-                </div>
-                
-                <div class="champion">
-                    <div class="champion-icon price-1">
-                        <img src="https://rerollcdn.com/characters/Skin/12/Nomsy.png" alt="Nomsy">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/Steb_1731058204-Steb.jpg" alt="Steb">
                     </div>
                     <div class="stars">★★</div>
                     <div class="items">
@@ -679,47 +694,21 @@
                 
                 <div class="champion">
                     <div class="champion-icon price-1">
-                        <img src="https://rerollcdn.com/characters/Skin/12/Elise.png" alt="Elise">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/Maddie_1731058145-Maddie.jpg" alt="Maddie">
                     </div>
                     <div class="stars">★★</div>
                     <div class="items">
                         
-                    </div>
-                </div>
-                
-                <div class="champion">
-                    <div class="champion-icon price-1">
-                        <img src="https://rerollcdn.com/characters/Skin/12/Jayce.png" alt="Jayce">
-                    </div>
-                    <div class="stars">★★</div>
-                    <div class="items">
-                        
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/knight's-vow1.png?v=60" alt="knight's-vow1">
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/last-whisper.png?v=60" alt="last-whisper">
                         
                     </div>
                 </div>
                 
                 <div class="champion">
                     <div class="champion-icon price-2">
-                        <img src="https://rerollcdn.com/characters/Skin/12/Shyvana.png" alt="Shyvana">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/Camille_1731058112-Camille.png" alt="Camille">
                     </div>
-                    <div class="stars">★★</div>
-                    <div class="items">
-                        
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/redemption.png?v=60" alt="redemption">
-                        
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/gargoyle-stoneplate.png?v=60" alt="gargoyle-stoneplate">
-                        
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/bramble-vest.png?v=60" alt="bramble-vest">
-                        
-                    </div>
-                </div>
-                
-                <div class="champion">
-                    <div class="champion-icon price-3">
-                        <img src="https://rerollcdn.com/characters/Skin/12/Swain.png" alt="Swain">
-                    </div>
-                    <div class="stars">★★</div>
+                    <div class="stars">★</div>
                     <div class="items">
                         
                     </div>
@@ -727,42 +716,96 @@
                 
                 <div class="champion">
                     <div class="champion-icon price-3">
-                        <img src="https://rerollcdn.com/characters/Skin/12/Neeko.png" alt="Neeko">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/Loris_1731058129-Loris.jpg" alt="Loris">
                     </div>
                     <div class="stars">★★</div>
                     <div class="items">
+                        
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/redemption.png?v=60" alt="redemption">
+                        
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/gargoyle-stoneplate.png?v=60" alt="gargoyle-stoneplate">
+                        
+                    </div>
+                </div>
+                
+                <div class="champion">
+                    <div class="champion-icon price-3">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/TwistedFate_1731058344-TwistedFate.png" alt="Twistedfate">
+                    </div>
+                    <div class="stars">★★</div>
+                    <div class="items">
+                        
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/needlessly-large-rod.png?v=60" alt="needlessly-large-rod">
                         
                     </div>
                 </div>
                 
                 <div class="champion">
                     <div class="champion-icon price-4">
-                        <img src="https://rerollcdn.com/characters/Skin/12/Nasus.png" alt="Nasus">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/Vi_1731058374-Vi.png" alt="Vi">
                     </div>
-                    <div class="stars">★</div>
+                    <div class="stars">★★</div>
                     <div class="items">
                         
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/bloodthirster.png?v=60" alt="bloodthirster">
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/bloodthirster.png?v=60" alt="bloodthirster">
                         
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/redemption.png?v=60" alt="redemption">
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/titans-resolve.png?v=60" alt="titans-resolve">
                         
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/dragons-claw.png?v=60" alt="dragons-claw">
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/sterak's-gage.png?v=60" alt="sterak's-gage">
                         
                     </div>
                 </div>
                 
                 <div class="champion">
                     <div class="champion-icon price-5">
-                        <img src="https://rerollcdn.com/characters/Skin/12/Smolder.png" alt="Smolder">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/Sevika_1731058172-Sevika.jpg" alt="Sevika">
                     </div>
                     <div class="stars">★★</div>
                     <div class="items">
                         
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/shapeshifter.png?v=60" alt="shapeshifter">
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/last-whisper.png?v=60" alt="last-whisper">
                         
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/last-whisper.png?v=60" alt="last-whisper">
+                    </div>
+                </div>
+                
+                <div class="champion">
+                    <div class="champion-icon price-5">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/Rumble_1731058291-Rumble.png" alt="Rumble">
+                    </div>
+                    <div class="stars">★</div>
+                    <div class="items">
                         
-                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/infinity-edge.png?v=60" alt="infinity-edge">
+                    </div>
+                </div>
+                
+                <div class="champion">
+                    <div class="champion-icon price-5">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/Rumble_1731058291-Rumble.png" alt="Rumble">
+                    </div>
+                    <div class="stars">★★</div>
+                    <div class="items">
+                        
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/giant-slayer.png?v=60" alt="giant-slayer">
+                        
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/enforcer-emblem.png?v=60" alt="enforcer-emblem">
+                        
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/evenshroud.png?v=60" alt="evenshroud">
+                        
+                    </div>
+                </div>
+                
+                <div class="champion">
+                    <div class="champion-icon price-5">
+                        <img src="https://cdn.lolchess.gg/upload/images/champions/Caitlyn_1731058105-Caitlyn.png" alt="Caitlyn">
+                    </div>
+                    <div class="stars">★★</div>
+                    <div class="items">
+                        
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/spear-of-shojin2.png?v=60" alt="spear-of-shojin2">
+                        
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/last-whisper.png?v=60" alt="last-whisper">
+                        
+                        <img src="https://cdn.mobalytics.gg/assets/tft/images/game-items/set13/infinity-edge.png?v=60" alt="infinity-edge">
                         
                     </div>
                 </div>

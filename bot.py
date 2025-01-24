@@ -49,10 +49,13 @@ async def tft_run(ctx):
     if tft_run_var:
         tft_run_var=False
         await ctx.send("Stop running TFT match detection")
+        await ctx.message.delete()
         tft_check_channel_id=''
     else:
         tft_run_var=True
         await ctx.send("Start running TFT match detection")
+        # delete sender message
+        await ctx.message.delete()
         tft_check_channel_id=ctx.channel.id
 
 @bot.command(name='tft')

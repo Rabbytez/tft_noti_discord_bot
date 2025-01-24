@@ -1,3 +1,4 @@
+import requests
 import os
 import json
 import time
@@ -12,22 +13,67 @@ from datetime import datetime, timezone
 from augments import augment_data
 import pytz
 import sys
-
+import random
 # Import the assets functions
-from assets import get_champion_assets, get_rank_assets, get_trait_data
+from assets import  get_rank_assets
 
-# Load items data
+SET = 13
+
+# load with api
+# https://tft.dakgg.io/api/v1/data/items?hl=en&season=set13
+# items_data = requests.get(
+#     f'https://tft.dakgg.io/api/v1/data/items?hl=en&season=set{SET}').json()
+
 with open("tft_set12_items.json", "r", encoding="utf-8") as f:
     items_data = json.load(f)
 
 # Retrieve rank data and champion assets from assets.py
 rank_data = get_rank_assets()
-champion_assets = get_champion_assets()
-trait_data = get_trait_data()
+# champion_assets = get_champion_assets()
+# trait_data = get_trait_data()
+champions_data = requests.get(
+    f'https://tft.dakgg.io/api/v1/data/champions?hl=en&season=set{SET}').json()
+
+def get_champion_assets(champion_name):
+    # https://tft.dakgg.io/api/v1/data/champions?hl=en&season=set13
+
+    
+    champions = champions_data.get("champions", [])
+    if champion_name=='Hextech':
+        champion_name='JayceSummon'
+    for champion in champions:
+        if champion.get("key", "").lower() == champion_name.lower():
+            if 'https:' in champion.get('imageUrl', ''):
+                url = champion.get('imageUrl', '')
+            else:
+
+                url = f"https:{champion.get('imageUrl', '')}"
+            return {
+                "url": url,
+                "price": champion.get("cost", [1])[0]
+            }
+url=f'https://tft.dakgg.io/api/v1/data/traits?hl=en&season=set{SET}'
+traits_data = requests.get(url).json()
+
+def trait_data(trait_slug):
+    # https://tft.dakgg.io/api/v1/data/traits?hl=en&season=set13
+   
+    traits = traits_data.get("traits", [])
+    trait_slug=trait_slug.replace('-', '')
+    for trait in traits:
+        if trait.get("key", "").lower() == trait_slug.lower():
+            return {
+                "icon": f"https:{trait.get('imageUrl', '')}",
+                "tier": trait.get("styles", [])
+            }
+
+    print(f"Trait not found: {trait_slug}")
+        
 
 def time_ago(match_time_str):
     bangkok_tz = pytz.timezone('Asia/Bangkok')
-    match_time = datetime.strptime(match_time_str, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    match_time = datetime.strptime(
+        match_time_str, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
     match_time = match_time.astimezone(bangkok_tz)
     current_time = datetime.now(bangkok_tz)
     time_diff = current_time - match_time
@@ -44,7 +90,8 @@ def time_ago(match_time_str):
         return f"{minutes} minutes ago"
     else:
         return "just now"
-    
+
+
 def get_rank_icon_and_color(rating_text):
     if not rating_text:
         return "", "#ffffff", ""
@@ -54,69 +101,117 @@ def get_rank_icon_and_color(rating_text):
     rank_info = rank_data.get(rank, {"icon": "", "color": "#ffffff"})
     return rank_info["icon"], rank_info["color"], rank_roman
 
+
 def get_lp_change_color(lp_change):
     return "green" if lp_change > 0 else "red"
 
+
+# def analyze_last_10_matches(matches_data):
+#     if not matches_data:
+#         return "No Data", "default"
+
+#     # Initialize counters for various playstyles
+#     ap_count = 0
+#     ad_count = 0
+#     tank_count = 0
+#     utility_count = 0
+
+#     # Loop through matches and count traits or champions
+#     for match in matches_data:
+#         participant = match
+#         if not participant:
+#             continue
+#         # Analyze units
+#         units = participant
+#         for unit in units:
+#             # Determine the type of the unit (AP, AD, Tank, Utility)
+#             unit_traits = unit.get("traits", [])
+#             if any(trait in ["Blaster", "Portal", "Mage"] for trait in unit_traits):
+#                 ap_count += 1
+#             elif any(trait in ["Hunter", "Warrior", "Multistriker"] for trait in unit_traits):
+#                 ad_count += 1
+#             elif any(trait in ["Shapeshifter", "Bastion", "Vanguard"] for trait in unit_traits):
+#                 tank_count += 1
+#             elif any(trait in ["Incantor", "Perservers"] for trait in unit_traits):
+#                 utility_count += 1
+
+#     # Determine the highest count
+#     counts = {
+#         "AP Enjoyer": ap_count,
+#         "AD Enthusiast": ad_count,
+#         "Tank Lover": tank_count,
+#         "Utility Master": utility_count
+#     }
+#     perk_tag = max(counts, key=counts.get)
+#     perk_color = {
+#         "AP Enjoyer": "purple",
+#         "AD Enthusiast": "red",
+#         "Tank Lover": "green",
+#         "Utility Master": "blue"
+#     }.get(perk_tag, "default")
+#     print(counts)
+#     print(f"Perk Tag: {perk_tag}, Perk Color: {perk_color}")
+#     return perk_tag, perk_color
+# edit analyze_last_10_matches to triats spammer
 def analyze_last_10_matches(matches_data):
     if not matches_data:
         return "No Data", "default"
-
-    # Initialize counters for various playstyles
-    ap_count = 0
-    ad_count = 0
-    tank_count = 0
-    utility_count = 0
-
-    # Loop through matches and count traits or champions
+    
+    trait_count = {}
+    # Initialize counters for various playstyles    
     for match in matches_data:
         participant = match
         if not participant:
             continue
         # Analyze units
         units = participant
-        for unit in units:
-            # Determine the type of the unit (AP, AD, Tank, Utility)
-            unit_traits = unit.get("traits", [])
-            if any(trait in ["Blaster", "Portal", "Mage"] for trait in unit_traits):
-                ap_count += 1
-            elif any(trait in ["Hunter", "Warrior", "Multistriker"] for trait in unit_traits):
-                ad_count += 1
-            elif any(trait in ["Shapeshifter", "Bastion", "Vanguard"] for trait in unit_traits):
-                tank_count += 1
-            elif any(trait in ["Incantor", "Perservers"] for trait in unit_traits):
-                utility_count += 1
+        for trait in units:
+            
+            trait_name=trait.get('slug','')
+            if trait_name in trait_count:
+                trait_count[trait_name] += trait.get('numUnits',0)
+            else:
+                trait_count[trait_name] = trait.get('numUnits',0)
 
     # Determine the highest count
-    counts = {
-        "AP Enjoyer": ap_count,
-        "AD Enthusiast": ad_count,
-        "Tank Lover": tank_count,
-        "Utility Master": utility_count
-    }
-    perk_tag = max(counts, key=counts.get)
-    perk_color = {
-        "AP Enjoyer": "purple",
-        "AD Enthusiast": "red",
-        "Tank Lover": "green",
-        "Utility Master": "blue"
-    }.get(perk_tag, "default")
-    print(counts)
-    print(f"Perk Tag: {perk_tag}, Perk Color: {perk_color}")
-    return perk_tag, perk_color
+    print(trait_count)
+    perk_tag = max(trait_count, key=trait_count.get)
+
+    # return top 3 traits with random color
+    '''
+    example
+    top_3_perks = [{tag: 'trait1', color: 'red',url: 'url'}, {tag: 'trait2', color: 'blue',url: 'url'}, {tag: 'trait3', color: 'green',url: 'url'}]
+    '''
+    top_3_perks = []
+    color_list = ['red', 'blue', 'green', 'purple']
+    random.shuffle(color_list)
+    for i in range(3):  
+        perk_tag = max(trait_count, key=trait_count.get)
+        trait_count.pop(perk_tag)
+        # random color
+        perk_color = color_list[i]
+        url=f'https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set{SET}/24-{perk_tag}.svg?v=61' 
+        top_3_perks.append({'tag': perk_tag, 'color': perk_color, 'url': url})
+    return top_3_perks
+
+
+
 
 def latest_match_player(match_data, profile_data):
     if not match_data or not profile_data:
         return None  # Return None if puid_user or match_data is None
 
-    summoner_profile = profile_data.get("data", {}).get("tft", {}).get("profile", [])
+    summoner_profile = profile_data.get(
+        "data", {}).get("tft", {}).get("profile", [])
     if not summoner_profile:
         return None  # Return None if summoner_profile is empty or None
-    
+
     summoner_info = summoner_profile[0].get("profile", {})
     puid_user = summoner_info.get("summonerInfo", {}).get("puuid", "")
 
     # Access match data and check for the correct structure
-    latest_match_data = match_data.get("data", {}).get("tft", {}).get("matchV2")
+    latest_match_data = match_data.get(
+        "data", {}).get("tft", {}).get("matchV2")
     if not isinstance(latest_match_data, dict):
         print("Error: latest_match_data is not a dictionary or is missing.")
         return None
@@ -136,46 +231,55 @@ def latest_match_player(match_data, profile_data):
     print("Warning: No matching PUID found.")
     return None
 
+
 def get_match_latest_id(profile_data):
     try:
-        summoner_profile = profile_data.get("data", {}).get("tft", {}).get("profile", [])
+        summoner_profile = profile_data.get(
+            "data", {}).get("tft", {}).get("profile", [])
         if not summoner_profile or not isinstance(summoner_profile, list):
             return ""  # Return empty string if `summoner_profile` is None or not a list
-            
+
         summoner_info = summoner_profile[0].get("profile", {})
-        entries = summoner_info.get("summonerProgressTracking", {}).get("progress", {}).get("entries", [])
-        
+        entries = summoner_info.get("summonerProgressTracking", {}).get(
+            "progress", {}).get("entries", [])
+
         if not entries or not isinstance(entries, list):
             return ""  # Return empty string if entries are missing or not a list
 
         return entries[0].get("id", "")
-        
+
     except (IndexError, KeyError, TypeError) as e:
         print(f"Error getting match ID: {e}")
         return ""
 
-def format_match_details(profile_data, items_data ,match_data):
+
+def format_match_details(profile_data, items_data, match_data):
     if not profile_data or not items_data or not match_data:
         return None
     start_time = time.time()
-    
-    summoner_profile = profile_data.get("data", {}).get("tft", {}).get("profile", [])
+
+    summoner_profile = profile_data.get(
+        "data", {}).get("tft", {}).get("profile", [])
     summoner_info = summoner_profile[0].get("profile", {})
-    profile_latest_match = summoner_info.get("summonerProgressTracking", {}).get("progress", {}).get("entries", [{}])[0]
-    user_latest_match_data_details = latest_match_player(match_data, profile_data)
+    profile_latest_match = summoner_info.get("summonerProgressTracking", {}).get(
+        "progress", {}).get("entries", [{}])[0]
+    user_latest_match_data_details = latest_match_player(
+        match_data, profile_data)
 
     placement = profile_latest_match.get("placement", 0)
     traits = profile_latest_match.get("traits", [])
     lp_info = profile_latest_match.get("lp", {}).get("after", {})
     lp_diff = profile_latest_match.get("lp", {}).get("lpDiff", 0)
     champs = user_latest_match_data_details.get("units", [])
-    
-    summoners = match_data.get("data", {}).get("tft", {}).get("matchV2", {}).get("participants", [])
-    
+
+    summoners = match_data.get("data", {}).get(
+        "tft", {}).get("matchV2", {}).get("participants", [])
+
     players_data = []
 
     for summoner in summoners:
-        summoner_icon_id = summoner.get("profile", "").get("summonerInfo", "").get("profileIcon", "")
+        summoner_icon_id = summoner.get("profile", "").get(
+            "summonerInfo", "").get("profileIcon", "")
         summoner_icon_url = f"https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/{summoner_icon_id}.png?1"
         player_data = {
             "summoner_icon": summoner_icon_url,
@@ -184,26 +288,42 @@ def format_match_details(profile_data, items_data ,match_data):
             "summoner_placement": summoner.get("placement", 0),
         }
         players_data.append(player_data)
-            
+
     def get_trait_color(trait_slug, num_units):
-        tiers = trait_data.get(trait_slug, {})
+        # tiers = trait_data.get(trait_slug, {})
 
-        for units, color in sorted(tiers.items(), key=lambda x: int(x[0]), reverse=True):
-            if num_units >= int(units):
-                return color
+        # for units, color in sorted(tiers.items(), key=lambda x: int(x[0]), reverse=True):
+        #     if num_units >= int(units):
+        #         return color
+
+        # return "default"
+        trait_info = trait_data(trait_slug)
+        if not trait_info:
+            return "default"
+        tiers = trait_info.get("tier", [])
+        # sort the tiers by min value
+        sorted_tiers = sorted(tiers, key=lambda x: x.get("min", 0), reverse=True)
+        for tier in sorted_tiers:
+            if num_units >= tier.get("min", 0):
+                tier_color = tier.get("style", "default")
+                if tier_color == "bronze":
+                    tier_color='copper'
+                return tier_color
             
-        return "default"
-
-    sorted_traits = sorted(traits, key=lambda x: x.get('numUnits', 0), reverse=True)
-    url_img = "https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set12/"
+    sorted_traits = sorted(
+        traits, key=lambda x: x.get('numUnits', 0), reverse=True)
+    # url_img = "https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set13/"
+    # url_img = f"https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set{SET}/"
     formatted_traits = []
     for trait in sorted_traits:
         if isinstance(trait, dict):
+            
             trait_slug = trait.get('slug', '')
             trait_num_units = trait.get('numUnits', 0)
-            trait_icon_url = f"{url_img}24-{trait_slug}.svg?v=61"
+            # trait_icon_url = f"{url_img}24-{trait_slug}.svg?v=61"
+            trait_icon_url = trait_data(trait_slug).get("icon", "")
             trait_color = get_trait_color(trait_slug, trait_num_units)
-            
+
             if trait_color != "default":
                 formatted_traits.append({
                     "name": trait_slug.capitalize(),
@@ -226,28 +346,32 @@ def format_match_details(profile_data, items_data ,match_data):
         items_info = []
         for item_name in champ_items:
             item_slug = item_name_to_slug.get(item_name)
-            item_image_url = f"https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/{item_slug}.png?v=60" if item_slug else f"https://cdn.mobalytics.gg/assets/tft/images/game-items/set12/{item_name.lower().replace(' ', '-')}.png?v=60"
+            item_image_url = f"https://cdn.mobalytics.gg/assets/tft/images/game-items/set{SET}/{item_slug}.png?v=60" if item_slug else f"https://cdn.mobalytics.gg/assets/tft/images/game-items/set{SET}/{item_name.lower().replace(' ', '-')}.png?v=60"
             items_info.append({
                 "name": item_name,
                 "url": item_image_url
             })
-        
+
         augments_info = user_latest_match_data_details.get("augments", [])
 
         formatted_augments = []
         for augment in augments_info:
             augment_slug = augment.get("slug", "")
-            augment_name = augment_slug.replace("-", " ").replace("+", "").title()
+            augment_name = augment_slug.replace(
+                "-", " ").replace("+", "").title()
             augment_image_url = augment_data(augment_slug)
             formatted_augments.append({
                 "name": augment_name,
                 "url": augment_image_url
             })
+
         
-        champion_info = champion_assets.get(champ_name, {})
+        # champion_info = champion_assets.get(champ_name, {})
+        champion_info = get_champion_assets(champ_name)
+        # print(champ_name)
         champion_image_url = champion_info.get("url", "")
         champ_price = champion_info.get("price", 1)
-        
+
         formatted_champs.append({
             "name": champ_name,
             "champ_price": champ_price,
@@ -257,7 +381,8 @@ def format_match_details(profile_data, items_data ,match_data):
         })
 
     end_time = time.time()
-    print(f"Time taken by format_match_details: {end_time - start_time:.4f} seconds")
+    print(
+        f"Time taken by format_match_details: {end_time - start_time:.4f} seconds")
 
     return {
         "placement": placement,
@@ -269,33 +394,35 @@ def format_match_details(profile_data, items_data ,match_data):
         "players_data": players_data
     }
 
-def create_match_summary(profile_data, match_data,shcedule_run=False):
+
+def create_match_summary(profile_data, match_data, shcedule_run=False):
     # Ensure profile_data and match_data are valid before proceeding
     if not profile_data or not match_data:
         print("Error: One or more inputs to create_match_summary are None.")
         return None
 
     # Extract necessary profile data
-    summoner_profile = profile_data.get("data", {}).get("tft", {}).get("profile", [])
+    summoner_profile = profile_data.get(
+        "data", {}).get("tft", {}).get("profile", [])
     if not summoner_profile:
         print("Error: summoner_profile is None or empty.")
         return None
-    
+
     summoner_info = summoner_profile[0].get("profile", {})
     summoner_name = summoner_info.get("info", {}).get("gameName", "")
     summoner_tag = summoner_info.get("info", {}).get("tagLine", "")
     rating_info = summoner_info.get("rank", {})
     rating_text = f"{rating_info.get('tier', '')} {rating_info.get('division', '')}"
-    
 
     # Check match data structure
-    latest_match_data = match_data.get("data", {}).get("tft", {}).get("matchV2")
+    latest_match_data = match_data.get(
+        "data", {}).get("tft", {}).get("matchV2")
     latest_match_id = get_match_latest_id(profile_data)
 
     if not isinstance(latest_match_data, dict):
         print("Error: latest_match_data is None or not a dictionary.")
         return None
-    
+
     # Extract ranked queue data
     ranked_performance = summoner_info.get("summonerPerformance", {})
     ranked_queue = []
@@ -305,11 +432,12 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             break
         else:
             continue
-            
-    average_placement = ranked_queue.get("performance", {}).get("averagePlace", 0)
+
+    average_placement = ranked_queue.get(
+        "performance", {}).get("averagePlace", 0)
     average_placement_formatted = f"{average_placement:.2f}"
-    
-    # Extract match data 
+
+    # Extract match data
     # Extract latest match details // damage dealt
     damge_icon = f"https://www.metatft.com/icons/announce_icon_combat.png"
     latest_match_details = latest_match_player(match_data, profile_data)
@@ -320,28 +448,30 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
     time_eliminated_formatted = f"{time_eliminated // 60}m" if time_eliminated else "N/A"
 
     # Fetch last 10 match IDs
-    match_history_entries = summoner_info.get("summonerProgressTracking", {}).get("progress", {}).get("entries", [])
-    last_10_match_traits = [entry.get("traits", "") for entry in match_history_entries[:10]]
+    match_history_entries = summoner_info.get(
+        "summonerProgressTracking", {}).get("progress", {}).get("entries", [])
+    last_10_match_traits = [entry.get("traits", "")
+                            for entry in match_history_entries[:10]]
 
     # Analyze the last 10 matches to determine the perk tag
-    perk_tag, perk_color = analyze_last_10_matches(last_10_match_traits)
-    perk_icon_url = f"https://www.metatft.com/icons/AP.svg"
-    
-    
+    perks = analyze_last_10_matches(last_10_match_traits)
+
+
     # Extract profile icon ID and construct URL
     puid = summoner_info.get("summonerInfo", {}).get("puuid", "")
-    profile_icon_id = summoner_info.get("summonerInfo", {}).get("profileIcon", "")
+    profile_icon_id = summoner_info.get(
+        "summonerInfo", {}).get("profileIcon", "")
     profile_icon_url = f"https://cdn.mobalytics.gg/assets/lol/images/dd/summoner-icons/{profile_icon_id}.png?1"
-    
+
     if shcedule_run:
 
         if not os.path.exists("last_match_id.json"):
             with open("last_match_id.json", "w") as json_file:
                 json.dump({}, json_file)
-        
+
         with open("last_match_id.json") as json_file:
             last_match_id = json.load(json_file)
-            last_match_id_json=last_match_id
+            last_match_id_json = last_match_id
 
         if puid not in last_match_id_json:
             # print('puid not in last_match_id_json')
@@ -361,11 +491,10 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
     match_time = time_ago(latest_match_data.get("date", "Unknown"))
     match_duration_seconds = latest_match_data.get("durationSeconds", 0)
     match_duration = f"{match_duration_seconds // 60}m" if match_duration_seconds else "N/A"
-    
-
 
     # Attempt to access progress tracking data
-    profile_latest_match = summoner_info.get("summonerProgressTracking", {}).get("progress", {}).get("entries", [{}])[0]
+    profile_latest_match = summoner_info.get("summonerProgressTracking", {}).get(
+        "progress", {}).get("entries", [{}])[0]
     if not profile_latest_match:
         print("Warning: profile_latest_match is None or empty.")
         return None
@@ -373,7 +502,8 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
     # Get rank information with a safe check
     rank_icon, rank_color, rank_tier = get_rank_icon_and_color(rating_text)
     lp_diff = profile_latest_match.get("lp", {}).get("lpDiff", 0)
-    lp_value = profile_latest_match.get("lp", {}).get("after", {}).get("value", 0)
+    lp_value = profile_latest_match.get(
+        "lp", {}).get("after", {}).get("value", 0)
     lp_color = get_lp_change_color(lp_diff)
     lp_value_last_two_digits = str(lp_value)[-2:]
 
@@ -381,7 +511,8 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
     lp_diff = f"+{lp_diff}" if lp_color == "green" else f"{lp_diff}"
 
     # Determine game mode
-    check_game_mode = profile_latest_match.get("lp", {}).get("after", {}).get("rank", {}).get("__typename", "")
+    check_game_mode = profile_latest_match.get("lp", {}).get(
+        "after", {}).get("rank", {}).get("__typename", "")
     game_mode = "Ranked" if check_game_mode == "SummonerRank" else "..."
 
     # Format match details, adding extra check for the latest match details
@@ -389,9 +520,9 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
     if not match_details:
         print("Error: match_details is None.")
         return None
-    
+
     ver_patch = profile_latest_match.get("patch", "")
-    
+
     placement = match_details["placement"]
     traits = match_details["traits"]
     augments = match_details["augments"]
@@ -778,9 +909,9 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             border-radius: 10px;
             justify-content: center;
             align-items: flex-start;
-            flex-direction: column;
-            flex-wrap: wrap;
-            flex: 1;
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: repeat(4, auto);
             align-content: space-around;
         }
         .summoners-tag {
@@ -822,6 +953,7 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         .player-perk-tag {
             display: flex;
             flex-direction: column;
+            text-align: center;
             align-items: start;
             justify-content: center;
             max-width: 150px;
@@ -830,30 +962,19 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             border-radius: 10px;
             flex: 1;
             margin-bottom: 20px;
-        }
-        .player-perk-tag {
-            display: flex;
-            flex-direction: column;
-            align-items: start;
-            justify-content: center;
-            max-width: 150px;
-            padding: 15px 15px 15px 15px;
-            background-color: #202637;
-            border-radius: 10px;
-            flex: 1;
-            margin-bottom: 20px;
+            font-size: 0.8em;
         }
         .player-perk {
             display: flex;
-            margin-right: 5px;
-            padding: 6px;
-            border-radius: 10px;
-            flex-direction: row;
             align-items: center;
+            margin-right: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            margin-top: 5px;
         }
         .player-perk img {
-            width: 18px;  /* Adjust size as needed */
-            height: 18px;
+            width: 15px;  /* Adjust size as needed */
+            height: 15px;
             margin-right: 5px;
         }
         .perk-text {
@@ -861,23 +982,23 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
             text-align: center;
         }
         .player-perk.purple {
-            background-color: #8e44ad;
+            color: #8432ab;
         }
 
         .player-perk.red {
-            background-color: #c0392b;
+            color: #e74c3c;
         }
 
         .player-perk.green {
-            background-color: #27ae60;
+            color: #2ecc71;
         }
 
         .player-perk.blue {
-            background-color: #2980b9;
+            color: #3498db;
         }
 
         .player-perk.default {
-            background-color: #6b6b6b;
+            color: #6b6b6b;
         }
     </style>
 </head>
@@ -936,17 +1057,12 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         
     <div class="match-summary">
         <div class="perk-augments-container">
-            <div class="player-perk-tag">             
-                <div class="player-perk {{ perk_color }}">
-                    <img src="{{ perk_icon_url }}" alt="{{ perk_tag }}">
-                    <div class="perk-text">{{ perk_tag }}</div>
-                </div>
-            </div>
-            <div class="augments-detail">
-                {% for augment in augments %}
-                <div class="augment">
-                    <img src="{{ augment.url }}" alt="{{ augment.name }}">
-                    <div class="augment-text">{{ augment.name }}</div>
+            <div class="player-perk-tag">
+                <div style="align-self: center">Top Comp</div>
+                {% for perk in perks %}        
+                <div class="player-perk {{ perk.color }}">
+                    <img src="{{ perk.url }}" alt="{{ perk.tag }}">
+                    <div class="perk-text">{{ perk.tag }}</div>
                 </div>
                 {% endfor %}
             </div>
@@ -1014,9 +1130,7 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
         damge_icon=damge_icon,
         time_eliminated_icon=time_eliminated_icon,
         players_data=players_data,
-        perk_tag=perk_tag,
-        perk_color=perk_color,
-        perk_icon_url=perk_icon_url,
+        perks=perks
     )
 
     # Save the rendered HTML to a file
@@ -1049,31 +1163,35 @@ def create_match_summary(profile_data, match_data,shcedule_run=False):
 
     # End timing Selenium operations
     selenium_end_time = time.time()
-    print(f"Selenium operations took {selenium_end_time - selenium_start_time:.4f} seconds")
+    print(
+        f"Selenium operations took {selenium_end_time - selenium_start_time:.4f} seconds")
     return image_name
+
 
 # Test
 if __name__ == '__main__':
     total_start_time = time.time()  # Start total execution timing
 
-    riotname = "1010"
-    tag = "ten10"
+    riotname = "beggy"
+    tag = "3105"
 
     try:
         data_fetch_start_time = time.time()  # Start data fetching timing
         profile_data = get_profile_data(riotname, tag)
 
         data_fetch_end_time = time.time()  # End data fetching timing
-        print(f"Data fetching took {data_fetch_end_time - data_fetch_start_time:.4f} seconds")
+        print(
+            f"Data fetching took {data_fetch_end_time - data_fetch_start_time:.4f} seconds")
 
     except Exception as e:
         print(f"Error fetching data: {e}")
         sys.exit(1)
-        
+
     match_id = get_match_latest_id(profile_data)
     match_data = get_match_data(match_id, riotname, tag)
 
     create_match_summary(profile_data, match_data)
 
     total_end_time = time.time()  # End total execution timing
-    print(f"Total script execution time: {total_end_time - total_start_time:.4f} seconds")
+    print(
+        f"Total script execution time: {total_end_time - total_start_time:.4f} seconds")
