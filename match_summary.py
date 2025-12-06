@@ -17,7 +17,7 @@ import random
 # Import the assets functions
 from assets import  get_rank_assets
 
-SET = 13
+SET = 16
 
 # load with api
 # https://tft.dakgg.io/api/v1/data/items?hl=en&season=set13
@@ -240,15 +240,25 @@ def get_match_latest_id(profile_data):
             return ""  # Return empty string if `summoner_profile` is None or not a list
 
         summoner_info = summoner_profile[0].get("profile", {})
-        entries = summoner_info.get("summonerProgressTracking", {}).get(
-            "progress", {}).get("entries", [])
+        if not summoner_info:
+            return ""
+
+        progress_tracking = summoner_info.get("summonerProgressTracking")
+        if not progress_tracking:
+            return ""  # Return empty if no progress tracking data
+
+        progress_data = progress_tracking.get("progress")
+        if not progress_data:
+            return ""
+
+        entries = progress_data.get("entries", [])
 
         if not entries or not isinstance(entries, list):
             return ""  # Return empty string if entries are missing or not a list
 
         return entries[0].get("id", "")
 
-    except (IndexError, KeyError, TypeError) as e:
+    except (IndexError, KeyError, TypeError, AttributeError) as e:
         print(f"Error getting match ID: {e}")
         return ""
 
@@ -548,8 +558,7 @@ def create_match_summary(profile_data, match_data, shcedule_run=False):
         }
             
         .container {
-            height: 390px;
-            max-height: 400px;
+            min-height: 390px;
             max-width: 880px;
             background-color: #1e1e1e;
             color: #ffffff;
@@ -1145,6 +1154,7 @@ def create_match_summary(profile_data, match_data, shcedule_run=False):
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--window-size=1920,1080")
     driver = webdriver.Chrome(options=chrome_options)
 
     try:
@@ -1152,6 +1162,8 @@ def create_match_summary(profile_data, match_data, shcedule_run=False):
         container = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "container"))
         )
+        # Let the page fully render
+        time.sleep(0.5)
         image_name = f"match_summary_banner_{puid}.png"
         screenshot_path = image_name
         container.screenshot(screenshot_path)

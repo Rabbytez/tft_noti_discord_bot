@@ -1,0 +1,76 @@
+{
+  "data": {
+    "tft": {
+      "profile": [
+        {
+          "profile": {
+            "puuid": "GP3YLvFYk_c-vIvZMIAQQli3cDMM-1PPit2EEcwbdQYR0z0zB3zknAGPE0apV43nlYqBH8F5iSTfFw",
+            "set": "13",
+            "rank": {
+              "tier": "GOLD",
+              "division": "IV",
+              "__typename": "SummonerRank"
+            },
+            "info": {
+              "gameName": "1010",
+              "tagLine": "ten10",
+              "__typename": "TftSummoner"
+            },
+            "badgesNormal": null,
+            "badgesRanked": null,
+            "badgesHyperRoll": null,
+            "leaderboardStanding": null,
+            "__typename": "TftProfile",
+            "summonerInfo": {
+              "puuid": "GP3YLvFYk_c-vIvZMIAQQli3cDMM-1PPit2EEcwbdQYR0z0zB3zknAGPE0apV43nlYqBH8F5iSTfFw",
+              "accountId": "GP3YLvFYk_c-vIvZMIAQQli3cDMM-1PPit2EEcwbdQYR0z0zB3zknAGPE0apV43nlYqBH8F5iSTfFw",
+              "summonerId": "",
+              "gameName": "1010",
+              "tagLine": "ten10",
+              "region": "SG",
+              "profileIcon": 4378,
+              "level": 7,
+              "__typename": "TftSummoner",
+              "mobaUuid": null,
+              "updatedAt": null,
+              "isUpdating": false
+            },
+            "summonerPerformance": [
+              {
+                "performance": null,
+                "__typename": "TftProfilePerformance"
+              },
+              {
+                "performance": null,
+                "__typename": "TftProfilePerformance"
+              },
+              {
+                "performance": null,
+                "__typename": "TftProfilePerformance"
+              },
+              {
+                "performance": null,
+                "__typename": "TftProfilePerformance"
+              }
+            ],
+            "summonerProgressTracking": null,
+            "overviewSection": {
+              "patches": null,
+              "recentActivity": null,
+              "placementDistribution": null,
+              "synergies": null,
+              "champions": null,
+              "recentSummary": null,
+              "matches": null,
+              "__typename": "TftProfileStats"
+            },
+            "summonerLpGains": null
+          },
+          "error": null,
+          "__typename": "TftProfilePayload"
+        }
+      ],
+      "__typename": "TftQuery"
+    }
+  }
+}

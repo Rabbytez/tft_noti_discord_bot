@@ -1,27 +1,13 @@
 import requests
 import json
 
-folder = "output"
-def get_profile_data(riotname, tag):
-    
-    file_name = f"v2-profile-data-{riotname}-{tag}.json"
+# Test with different regions
+def test_profile_api(riotname, tag, region):
     url = "https://mobalytics.gg/api/tft/v1/graphql/query"
 
     headers = {
         "Content-Type": "application/json",
         "accept": "*/*",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "en_us",
-        "cookie": "appmobaabgroup=A; appcfcountry=TH;",
-        "dnt": "1",
-        "origin": "https://mobalytics.gg",
-        "referer": f"https://mobalytics.gg/tft/profile/th/{riotname}-{tag}/overview",
-        "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
     }
 
     body = {
@@ -32,10 +18,10 @@ def get_profile_data(riotname, tag):
             "bHyperRollFilter": {"queues": ["HYPER_ROLL"], "patches": []},
             "lpGainsPerPage": 150,
             "filter": [
-                {"gameName": riotname, "tagLine": tag, "region": "SG", "set": "16"}
+                {"gameName": riotname, "tagLine": tag, "region": region, "set": "13"}
             ],
             "filterStats": {
-                "queue": "RANKED",
+                "queue": None,
                 "synergy": [],
                 "champion": [],
                 "patch": [],
@@ -60,63 +46,19 @@ def get_profile_data(riotname, tag):
     }
 
     response = requests.post(url, headers=headers, json=body)
+    return response.status_code, response.json()
 
-    if response.status_code == 200:
-        data = response.json()
-        print("200 profile Request successful!")
-        with open(file_name, "w") as f:
-            json.dump(data, f)
-    else:
-        print(f"Request failed with status code: {response.status_code}")
-
-    return data
-
-def get_match_data(match_id,riotname,tag,region="SG"):
-    
-    file_name = f"v2-match-data-{match_id}-{region}-{riotname}-{tag}.json"
-    
-    url = "https://mobalytics.gg/api/tft/v1/graphql/query"
-
-    headers = {
-        "Content-Type": "application/json",
-        "accept": "*/*",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "en_us",
-        "cookie": "appmobaabgroup=A; appcfcountry=TH;",
-        "dnt": "1",
-        "origin": "https://mobalytics.gg",
-        "referer": "https://mobalytics.gg/tft/profile/sg/overview",
-        "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-    }
-
-    body = {
-        "operationName": "TftMatchQuery",
-        "query":"query TftMatchQuery($filter: TftMatchFilter!) {\n  tft {\n    matchV2(filter: $filter) {\n      ...TftMatchFragment\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment TftMatchFragment on TftMatch {\n  id: matchId\n  region\n  date\n  set\n  patch\n  queue\n  durationSeconds\n  participants {\n    ...TftMatchParticipantFragment\n    __typename\n  }\n  __typename\n}\n\nfragment TftMatchParticipantFragment on TftMatchParticipant {\n  puuid\n  region\n  set\n  profile {\n    ...TftProfileNestedFragment\n    __typename\n  }\n  placement\n  damageDealt\n  timeEliminatedSeconds\n  archetypeId\n  traits {\n    ...TftMatchRegistryTraitFragment\n    __typename\n  }\n  units {\n    ...TftMatchRegistryUnitFragment\n    __typename\n  }\n  augments {\n    ...TftMatchRegistryAugmentFragment\n    __typename\n  }\n  __typename\n}\n\nfragment TftProfileNestedFragment on TftProfile {\n  puuid\n  rank {\n    ...TftSummonerRankFragment\n    __typename\n  }\n  ...TftProfileSummonerInfoFragment\n  __typename\n}\n\nfragment TftProfileSummonerInfoFragment on TftProfile {\n  puuid\n  summonerInfo: info {\n    ...TftSummonerFragment\n    __typename\n  }\n  __typename\n}\n\nfragment TftSummonerFragment on TftSummoner {\n  puuid\n  accountId\n  summonerId\n  gameName\n  tagLine\n  region\n  profileIcon\n  level\n  __typename\n}\n\nfragment TftSummonerRankFragment on SummonerRank {\n  tier\n  division\n  __typename\n}\n\nfragment TftMatchRegistryTraitFragment on TftMatchRegistryTrait {\n  slug\n  numUnits\n  style\n  tierCurrent\n  tierTotal\n  __typename\n}\n\nfragment TftMatchRegistryUnitFragment on TftMatchRegistryUnit {\n  slug\n  tier\n  items\n  chosen\n  __typename\n}\n\nfragment TftMatchRegistryAugmentFragment on TftMatchRegistryAugment {\n  slug\n  __typename\n}\n",
-        "variables": {"filter": {"region": region, "matchId": match_id}}
-    }    
-
-    response = requests.post(url, headers=headers, json=body)
-
-    if response.status_code == 200:
-        match_data = response.json()
-        with open(file_name, "w") as f:
-            json.dump(match_data, f)
-        print("200 match Request successful!")
-
-    else:
-        print(f"Request failed with status code: {response.status_code}")
-
-    return match_data
-
-# Test the functions
-if __name__ == "__main__":
-    match_id = "42590337"
-    riotname = "beggy"
-    tag = "3105"
-    profile_data = get_profile_data(riotname, tag)
-    match_data = get_match_data(match_id,riotname, tag)
+# Test different regions for sabree3#3105
+print("Testing sabree3#3105 with different regions:")
+for region in ["TH", "SG", "SEA", "SG2"]:
+    status, data = test_profile_api("sabree3", "3105", region)
+    print(f"\n{region}: Status {status}")
+    profile = data.get("data", {}).get("tft", {}).get("profile", [{}])[0]
+    if profile.get("error"):
+        print(f"  Error: {profile['error'].get('message')}")
+    elif profile.get("profile"):
+        prog_tracking = profile["profile"].get("summonerProgressTracking")
+        print(f"  Found profile! summonerProgressTracking: {prog_tracking is not None}")
+        if prog_tracking and prog_tracking.get("progress"):
+            entries = prog_tracking["progress"].get("entries", [])
+            print(f"  Number of match entries: {len(entries)}")

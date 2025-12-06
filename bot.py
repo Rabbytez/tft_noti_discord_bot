@@ -69,12 +69,12 @@ async def tft_latest_match(ctx, riot_id: str, tag: str):
         match_id = get_match_latest_id(profile_data)
         print(match_id)
         if not match_id:
-            await ctx.send("No recent matches found for this player.")
+            await ctx.send(f"No recent ranked matches found for {riot_id}#{tag} in Set 16. Make sure you've played ranked games recently!")
             return
 
         match_data = get_match_data(match_id, riot_id, tag)
         if not match_data:
-            await ctx.send("Failed to retrieve match data. Please try again later.")
+            await ctx.send(f"Failed to retrieve match data for match ID {match_id}. Please try again later.")
             return
 
         image_name = create_match_summary(profile_data, match_data)
@@ -117,13 +117,13 @@ async def check_lasted_match():
             match_id = get_match_latest_id(profile_data)
             print(match_id)
             if not match_id:
-                await channel.send("No recent matches found for this player.")
-                return
+                logger.info(f"No recent ranked matches found for {riot_id}#{tag} in Set 16")
+                continue
 
             match_data = get_match_data(match_id, riot_id, tag)
             if not match_data:
-                await channel.send("Failed to retrieve match data. Please try again later.")
-                return
+                logger.warning(f"Failed to retrieve match data for {riot_id}#{tag}")
+                continue
 
             image_name = create_match_summary(profile_data, match_data,shcedule_run=True)
             

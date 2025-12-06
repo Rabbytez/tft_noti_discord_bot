@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(python debug_api.py:*)",
+      "Bash(python:*)",
+      "Bash(cat:*)",
+      "Bash(identify:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
